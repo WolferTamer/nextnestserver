@@ -17,7 +17,7 @@ db.query("TRUNCATE cities.city", [], function (error) {
 fs.createReadStream("./us-cities-table.csv")
   .pipe(parse({ delimiter: ",", from_line: 2 }))
   .on("data", function (row) {
-    db.query('INSERT INTO cities.city (name, state, population) VALUES (?, ?, ?)',
+    db.query('INSERT INTO city (name, state, population) VALUES (?, ?, ?)',
         [row[1],row[2],row[0]],
         function (error) {
             if (error) {
