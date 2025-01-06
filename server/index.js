@@ -1,24 +1,16 @@
 const express = require('express');
 const cors = require('cors')
-const PORT = process.env.PORT || 3001;
-const SQLHOST = process.env.MYSQLHOST || "localhost";
 const app = express();
-var mysql = require('mysql2');
-const dotenv = require('dotenv').config()
 const fs = require('fs')
+const dotenv = require('dotenv').config()
+const PORT = process.env.PORT || 3001;
+const db = require('./db')
 
-//Start the connection to SQL
-var con = mysql.createConnection({
-  host: SQLHOST,
-  user: process.env.MYSQLUSER,
-  password: process.env.MYSQLPASSWORD,
-  insecureAuth: true
-});
-
-con.connect(function(err) {
-  if (err) throw err;
-  console.log("Connected!");
-});
+if(process.argv.length > 2) {
+  if(process.argv[2] === 'init') {
+    require('./initializers')
+  }
+}
 
 //Requires CORS headers to run on localhost with react app
 app.use(cors());
