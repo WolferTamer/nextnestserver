@@ -3,7 +3,7 @@
 //that each route has its own.
 
 
-const db = require("../db")
+const {db} = require("../db")
 
 module.exports = {
     //PARAMS: id (optional, the id number of the city), name (option, the name, or partial name, of the city)
