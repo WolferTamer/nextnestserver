@@ -5,9 +5,9 @@ const fs = require('fs')
 const dotenv = require('dotenv').config()
 const PORT = process.env.PORT || 3001;
 const {db} = require('./db')
-
+const initialize = require('./initializers')
 if(process.argv.length > 2) {
- require('./initializers')
+ initialize(process.argv)
 }
 
 //Requires CORS headers to run on localhost with react app

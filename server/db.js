@@ -1,4 +1,5 @@
 var mysql = require('mysql2');
+const Sequelize = require('sequelize')
 const SQLHOST = process.env.MYSQLHOST || "localhost";
 //Start the connection to SQL
 var con = mysql.createConnection({
@@ -13,4 +14,10 @@ con.connect(function(err) {
   console.log("Connected!");
 });
 
-module.exports = {db: con};
+let sequelize = new Sequelize('cities', process.env.MYSQLUSER, process.env.MYSQLPASSWORD, {
+    host: SQLHOST,
+    dialect: 'mysql',
+    define: {freezeTableName: true}
+})
+
+module.exports = {db: con, sequelize: sequelize};
