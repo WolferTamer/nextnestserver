@@ -1,7 +1,7 @@
 const {db, sequelize} = require("../db")
 const Sequelize = require("sequelize")
 const getStateCode = require("../utils/getStatecode")
-
+//Sleep function is used for delay between API calls. If there is no delay, API Ninja will return only errors for most API calls.
 function sleep(ms) {
     return new Promise((resolve) => {
       setTimeout(resolve, ms);
@@ -34,6 +34,7 @@ const tax = sequelize.define('tax', {
         allowNull:true
     }
 })
+//Set the foreign key to associate city with tax info
 sequelize.models.city.hasOne(tax, {
     foreignKey: {
         allowNull: false
@@ -41,6 +42,7 @@ sequelize.models.city.hasOne(tax, {
 })
 tax.belongsTo(sequelize.models.city)
 
+//Empty the tax table before starting
 db.query('TRUNCATE cities.tax', (err) => {
     if(err) {
         return console.error(err)
@@ -50,13 +52,15 @@ db.query('TRUNCATE cities.tax', (err) => {
 sequelize.sync({alter:true})
 .then(async () => {
     const myHeaders = new Headers();
-    myHeaders.append("X-Api-Key", "7mVi2+YxB7nRdaMa3ZJVOg==avYX3Sim9O6bBQkQ");
+    myHeaders.append("X-Api-Key", process.env.APININJAKEY);
 
     const requestOptions = {
         method: "GET",
         headers: myHeaders,
         redirect: "follow"
     };
+    //Count the amount of cities handled so we know when all API calls are finished
+    //Needs to be seperate from i because API calls are async while the for loop itself is not
     let count = 0;
     for(let i = 0; i < cities.length; i++) {
         await sleep(50);
@@ -64,6 +68,7 @@ sequelize.sync({alter:true})
         fetch(`https://api.api-ninjas.com/v1/propertytax?city=${city.name}&state=${getStateCode(city.state)}`, requestOptions)
             .then((response) => response.json())
             .then((result) => {
+                //Some cities have multiple zip codes under the same name, this averages all of them
                 let avg25 = 0;
                 let avg75 = 0;
                 if(result.length > 0) {
