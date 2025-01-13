@@ -7,10 +7,10 @@ import "./App.css";
 function App() {
   const [info, setData] = React.useState(null);
   React.useEffect(() => {
-    fetch("/api")
+    fetch("/api/city")
       .then((res) => {console.log(res); return res.json()})
       .then((data) => {
-        setData(data.message)
+        setData(data.cities)
         console.log("set data")
   });
   }, []);
@@ -18,8 +18,20 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>{!info ? "Loading..." : info}</p>
+      {!info ? (<p>Loading...</p>) : (<table>
+        {<tr key={"header"}>
+          {Object.keys(info[0]).map((key) => (
+            <th>{key}</th>
+          ))}
+        </tr>}
+
+        {info.map((item) => (
+        <tr key={item.id}>
+          {Object.values(item).map((val) => (
+            <td>{val}</td>
+          ))}
+        </tr>
+      ))}</table>)}
       </header>
     </div>
   );
