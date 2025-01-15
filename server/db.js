@@ -5,7 +5,7 @@ const SQLNAME = process.env.MYSQLNAME || "cities";
 //Start the connection to SQL
 
 
-let sequelize = new Sequelize('cities', process.env.MYSQLUSER, process.env.MYSQLPASSWORD, {
+let sequelize = new Sequelize(SQLNAME, process.env.MYSQLUSER, process.env.MYSQLPASSWORD, {
     host: SQLHOST,
     dialect: 'mysql',
     define: {freezeTableName: true},
