@@ -8,49 +8,16 @@ function sleep(ms) {
     });
   }
 
-module.exports = () => {
-db.query("SELECT id, name, state FROM cities.city", (err, cities) => {
+module.exports = async () => {
 
-    if(err) {
-        console.log(err)
-        return
-    }
-const tax = sequelize.define('tax', {
-    id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        primaryKey: true
-    },
-    salestax: {
-        type: Sequelize.FLOAT,
-        allowNull:true
-    },
-    propertytaxquarter: {
-        type: Sequelize.FLOAT,
-        allowNull:true
-    },
-    propertytaxthreequarters: {
-        type: Sequelize.FLOAT,
-        allowNull:true
-    }
-})
-//Set the foreign key to associate city with tax info
-sequelize.models.city.hasOne(tax, {
-    foreignKey: {
-        allowNull: false
-    }
-})
-tax.belongsTo(sequelize.models.city)
+    city = sequelize.models.city
+    cities = await city.findAll()
+    tax = sequelize.models.tax
+    //Empty the tax table before starting
+    await tax.destroy({
+        truncate: true,
+    });
 
-//Empty the tax table before starting
-db.query('TRUNCATE cities.tax', (err) => {
-    if(err) {
-        return console.error(err)
-    }
-})
-
-sequelize.sync({alter:true})
-.then(async () => {
     const myHeaders = new Headers();
     myHeaders.append("X-Api-Key", process.env.APININJAKEY);
 
@@ -62,6 +29,7 @@ sequelize.sync({alter:true})
     //Count the amount of cities handled so we know when all API calls are finished
     //Needs to be seperate from i because API calls are async while the for loop itself is not
     let count = 0;
+    console.log('Started updating taxes')
     for(let i = 0; i < cities.length; i++) {
         await sleep(50);
         const city = cities[i];
@@ -83,7 +51,7 @@ sequelize.sync({alter:true})
                 
                 fetch(`https://api.api-ninjas.com/v1/salestax?city=${city.name}&state=${city.state}`, requestOptions)
                 .then((response) => response.json())
-                .then((result) => {
+                .then(async (result) => {
                     let sales = 0;
                     if(result.length > 0) {
                         for(const value of result) {
@@ -93,13 +61,9 @@ sequelize.sync({alter:true})
                     }
                     count++
                     if(sales || avg25 || avg75) {
-                    db.query('INSERT INTO cities.tax (salestax, propertytaxquarter, propertytaxthreequarters, createdAt, updatedAt, cityId) VALUES (?, ?, ?, ?, ?, ?)',
-                    [sales,avg25,avg75,new Date(), new Date(), city.id],
-                    function (error) {
-                        if (error) {
-                          return console.log(error.message);
-                        }
-                      })
+                        data = {salestax: sales, propertytaxquarter: avg25, propertytaxthreequarters: avg75, cityId: city.id}
+                        await tax.upsert(data)
+                        console.log
                     } else {
                         console.error(`No Tax Info on ${city.name}`)
                     }
@@ -111,9 +75,4 @@ sequelize.sync({alter:true})
             })
             .catch((error) => console.error(error));
     }
-  })
-  .catch((err) => {
-    console.error('Error synchronizing database:', err);
-  });
-})
 }

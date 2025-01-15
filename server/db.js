@@ -17,7 +17,8 @@ con.connect(function(err) {
 let sequelize = new Sequelize('cities', process.env.MYSQLUSER, process.env.MYSQLPASSWORD, {
     host: SQLHOST,
     dialect: 'mysql',
-    define: {freezeTableName: true}
+    define: {freezeTableName: true},
+    logging: false
 })
 
 module.exports = {db: con, sequelize: sequelize};

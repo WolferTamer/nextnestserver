@@ -3,13 +3,27 @@
 //The order of values in this file should be: [population, name, state]
 const resetcity = require('./resetcity.js');
 const resettax = require('./resettax.js')
+const resetweather = require('./resetweather.js')
+const definemodels = require('./definemodels.js')
 module.exports = async (args) => {
     
     //The first row is ignored.
 
+    await definemodels()
     if(args.includes('init')) {
-        resetcity(async () => {
+        await resetcity(async () => {
             await resettax()
         })
+    } else {
+        if (args.includes('resetcity')) {
+            await resetcity()
+        }
+        if(args.includes('resettax')) {
+            resettax()
+        }
+        if(args.includes('resetweather')) {
+            resetweather()
+        }
     }
+
 }
