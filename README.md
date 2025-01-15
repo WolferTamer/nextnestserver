@@ -11,7 +11,7 @@ NextNest is an application designed to allow users to take quizzes and search th
 3. Create a MYSQL database with the name `cities` and create an account with full access to it.
 4. Set environment variables as described below.
 5. If you changed the port of the Node server, change the ports of `proxy` located inside `/client/vite.config.js` and `/client/package.json`
-6. Create a file named `us-cities-table.csv` in the root folder. It should contain a table of population count, city name, and state name in that order. The first row will be used as column names.
+6. Create a file named `us-cities-table.csv` in the root folder. An example in the correct format can be found [here.](https://drive.google.com/file/d/1r_Ae3mU5pl_e-a67_X11EedyGN9LgZgX/view?usp=sharing) Keep in mind that the order of the columns matter.
 7. Run the Node server with `npm start init` inside the root folder. Run the react server with `npm run dev` inside `/client`.
 
 ## Environment Variables
