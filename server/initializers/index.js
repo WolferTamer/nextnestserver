@@ -9,7 +9,6 @@ module.exports = async (args) => {
     
     //The first row is ignored.
 
-    await definemodels()
     if(args.includes('init')) {
         await resetcity(async () => {
             await resettax()

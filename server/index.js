@@ -4,8 +4,11 @@ const app = express();
 const fs = require('fs')
 const dotenv = require('dotenv').config()
 const PORT = process.env.PORT || 3001;
-const {db} = require('./db')
+const {sequelize} = require("./db")
 const initialize = require('./initializers')
+const definemodels = require("./initializers/definemodels")
+definemodels()
+
 if(process.argv.length > 2) {
  initialize(process.argv)
 }

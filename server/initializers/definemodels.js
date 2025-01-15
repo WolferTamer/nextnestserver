@@ -1,6 +1,6 @@
-const {db, sequelize} = require("../db")
+const {sequelize} = require("../db")
 const Sequelize = require("sequelize")
-module.exports = async () => {
+module.exports = () => {
     const city = sequelize.define('city', {
         id: {
             type: Sequelize.INTEGER,
@@ -131,5 +131,5 @@ module.exports = async () => {
     })
     weather.belongsTo(city)
 
-    await sequelize.sync({alter: true})
+    sequelize.sync({alter: true})
 }

@@ -1,5 +1,5 @@
 const { parse } = require("csv-parse");
-const {db, sequelize} = require("../db")
+const {sequelize} = require("../db")
 const fs = require("fs")
 const Sequelize = require('sequelize')
 
@@ -11,7 +11,7 @@ function sleep(ms) {
 
 module.exports = async (callback) => {
   console.log("Defining city model!")
-  
+
 
   console.log('Beginning parse through CSV file.')
   //Get the amount of rows in the CSV. It uses this value so it knows when to use the callback. The callback is used for

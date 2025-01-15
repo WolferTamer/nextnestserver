@@ -1,4 +1,4 @@
-const {db, sequelize} = require("../db")
+const {sequelize} = require("../db")
 const Sequelize = require("sequelize")
 const getStateCode = require("../utils/getStatecode")
 //Sleep function is used for delay between API calls. If there is no delay, API Ninja will return only errors for most API calls.
