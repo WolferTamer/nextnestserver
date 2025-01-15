@@ -1,6 +1,7 @@
 var mysql = require('mysql2');
 const Sequelize = require('sequelize')
 const SQLHOST = process.env.MYSQLHOST || "localhost";
+const SQLNAME = process.env.MYSQLNAME || "cities";
 //Start the connection to SQL
 
 
