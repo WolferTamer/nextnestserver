@@ -49,6 +49,6 @@ app.get("/api", (req, res) => {
   });
 
 //Start accepting HTTP requests
-app.listen(PORT, () => {
+app.listen(PORT, '::', () => {
     console.log(`Server listening on ${PORT}`);
   });
