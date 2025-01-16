@@ -20,7 +20,7 @@
         format json # set access log format to json mode
     }
 
-    handle /api* {
+    handle_path /api* {
         reverse_proxy  http://nextnestserver.railway.internal:3000
     }
 
