@@ -21,7 +21,8 @@
     }
 
     handle_path /api/* {
-        reverse_proxy  nextnestserver.railway.internal:3000/api
+        rewrite / /api
+        reverse_proxy  nextnestserver.railway.internal:3000
     }
     rewrite /health /
     handle {
