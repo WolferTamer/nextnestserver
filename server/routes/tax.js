@@ -9,8 +9,21 @@ module.exports = {
             tax = sequelize.models.tax
             let taxes
 
-            
-            taxes = await tax.findAll()
+            if(req.query.id) {
+                taxes = await tax.findAll({where: {
+                    cityId: req.query.id
+                }})
+            } else if (req.query.name) {
+                taxes = await tax.findAll({
+                    where: {
+                        name: {
+                            [Sequelize.Op.like] : `%${req.query.name}%`
+                        }
+                    }
+                })
+            } else {
+                taxes = await city.findAll()
+            }
             
 
             

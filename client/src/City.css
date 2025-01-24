@@ -1,0 +1,11 @@
+table, th, td {
+    border: 1px solid;
+    font-weight: normal;
+}
+
+tr { display: block; float: left; }
+th, td { display: block; }
+
+.table-header {
+    font-weight: bold;
+}

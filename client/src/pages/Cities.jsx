@@ -8,7 +8,6 @@ const Cities = () => {
     console.log('Hello')
   const [info, setData] = React.useState(null);
   React.useEffect(() => {
-    console.log("Fetching: ", process.env.API_URL)
     fetch("/api/city")
       .then((res) => {console.log("Result: ", res); return res.json()})
       .then((data) => {
