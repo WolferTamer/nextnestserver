@@ -9,9 +9,21 @@ module.exports = {
             weather = sequelize.models.weather
             let data
 
-            
-            data = await weather.findAll()
-            
+            if(req.query.id) {
+                data = await weather.findAll({where: {
+                    cityId: req.query.id
+                }})
+            } else if (req.query.name) {
+                data = await weather.findAll({
+                    where: {
+                        name: {
+                            [Sequelize.Op.like] : `%${req.query.name}%`
+                        }
+                    }
+                })
+            } else {
+                data = await weather.findAll()
+            }
 
             
             
