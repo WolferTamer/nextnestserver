@@ -102,14 +102,14 @@ const City = () => {
         <caption>City</caption>
         <tbody>
           
-          <tr>
+          <tr className='flipped-table'>
             {Object.keys(city).map((key) => (
-              <th id={key}  className='table-header'>{key}</th>
+              <th id={key}  className='table-header flipped-table'>{key}</th>
             ))}
           </tr>
-          <tr>
+          <tr  className='flipped-table'>
             {Object.values(city).map((key) => (
-              <th>{key}</th>
+              <th  className='flipped-table'>{key}</th>
             ))}
           </tr>
         </tbody>
@@ -119,14 +119,14 @@ const City = () => {
         <caption>Taxes</caption>
         <tbody>
           
-          <tr>
+          <tr className='flipped-table'>
             {Object.keys(tax).map((key) => (
-              <th id={key} className='table-header'>{key}</th>
+              <th id={key} className='table-header flipped-table'>{key}</th>
             ))}
           </tr>
-          <tr>
+          <tr className='flipped-table'>
             {Object.values(tax).map((key) => (
-              <th>{key}</th>
+              <th className='flipped-table'>{key}</th>
             ))}
           </tr>
         </tbody>
@@ -136,14 +136,14 @@ const City = () => {
         <caption>Weather</caption>
         <tbody>
           
-          <tr>
+          <tr className='flipped-table'>
             {Object.keys(weather).map((key) => (
-              <th id={key} className='table-header'>{key}</th>
+              <th id={key} className='table-header flipped-table'>{key}</th>
             ))}
           </tr>
-          <tr>
+          <tr className='flipped-table'>
             {Object.values(weather).map((key) => (
-              <th>{key}</th>
+              <th className='flipped-table'>{key}</th>
             ))}
           </tr>
         </tbody>

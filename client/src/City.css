@@ -3,8 +3,8 @@ table, th, td {
     font-weight: normal;
 }
 
-tr { display: block; float: left; }
-th, td { display: block; }
+tr.flipped-table { display: block; float: left; }
+.flipped-table { display: block; }
 
 .table-header {
     font-weight: bold;
