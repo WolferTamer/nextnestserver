@@ -1,6 +1,7 @@
 table, th, td {
     border: 1px solid;
     font-weight: normal;
+    border-collapse: collapse;
 }
 
 tr.flipped-table { display: block; float: left; }

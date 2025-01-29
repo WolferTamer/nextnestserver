@@ -98,20 +98,17 @@ const City = () => {
         </h1>
       </header>
       {!city ? (<p>Loading</p>): city.error ? (<p>"404 Not Found"</p>): 
-      (<table>
+      (<table id="city-table">
         <caption>City</caption>
         <tbody>
           
-          <tr className='flipped-table'>
+          
             {Object.keys(city).map((key) => (
-              <th id={key}  className='table-header flipped-table'>{key}</th>
+              <tr>
+                <td id={key}  className='table-header'>{key}</td>
+                <td>{city[key]}</td>
+              </tr>
             ))}
-          </tr>
-          <tr  className='flipped-table'>
-            {Object.values(city).map((key) => (
-              <th  className='flipped-table'>{key}</th>
-            ))}
-          </tr>
         </tbody>
       </table>)}
       {!tax ? (<p>Loading</p>): tax.error ? (<p>{tax.error}</p>): 
@@ -126,7 +123,7 @@ const City = () => {
           </tr>
           <tr className='flipped-table'>
             {Object.values(tax).map((key) => (
-              <th className='flipped-table'>{key}</th>
+              <td className='flipped-table'>{key}</td>
             ))}
           </tr>
         </tbody>
@@ -143,7 +140,7 @@ const City = () => {
           </tr>
           <tr className='flipped-table'>
             {Object.values(weather).map((key) => (
-              <th className='flipped-table'>{key}</th>
+              <td className='flipped-table'>{key}</td>
             ))}
           </tr>
         </tbody>
