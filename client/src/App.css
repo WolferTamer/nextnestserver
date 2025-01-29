@@ -62,4 +62,10 @@
   text-align: left;
   background-color: #04AA6D;
   color: white;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+#cities-table svg {
+  margin-left: 5px;
 }

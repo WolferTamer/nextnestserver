@@ -51,7 +51,7 @@ const Cities = () => {
           {Object.keys(info[0]).map((key) => (
             <th onClick={() => { console.log("clicked"); applySorting(key, !sorting.ascending)}} key={key}>
               {key}
-              {sorting.key === key ? (<FontAwesomeIcon icon={sorting.ascending ? faChevronDown : faChevronUp}/>) : ""}
+              {(<FontAwesomeIcon icon={sorting.ascending ? faChevronDown : faChevronUp} visibility={sorting.key === key ? "visible" : "hidden"}/>)}
               </th>
           ))}
         </tr>}
