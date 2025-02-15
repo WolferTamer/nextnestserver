@@ -66,6 +66,17 @@ module.exports = () => {
         propertytaxthreequarters: {
             type: Sequelize.FLOAT,
             allowNull:true
+        },
+        localtaxes: {
+            type: Sequelize.BOOLEAN,
+            allowNull: true,
+            default: false
+        },
+        singlestandarddeduction: {
+            type: Sequelize.INTEGER
+        },
+        marriedstandarddeduction: {
+            type: Sequelize.INTEGER
         }
     })
     //Set the foreign key to associate city with tax info
@@ -75,6 +86,31 @@ module.exports = () => {
         }
     })
     tax.belongsTo(city)
+
+    const incometax = sequelize.define('incometax', {
+        id: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
+        },
+        state: {
+            type: Sequelize.STRING,
+            allowNull: false
+        }, 
+        bracket: {
+            type: Sequelize.INTEGER
+        },
+        rate: {
+            type: Sequelize.FLOAT,
+            allowNull: false,
+            default: 0
+        },
+        married: {
+            type: Sequelize.BOOLEAN,
+            allowNull: false,
+            default: false
+        }
+    })
 
     const weather = sequelize.define('weather', {
         id: {
