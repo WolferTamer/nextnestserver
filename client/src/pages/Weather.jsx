@@ -16,7 +16,6 @@ function Weather() {
 
   return (
     <div className="Weather">
-      <header className="Weather-header">
       {!info ? (<p>Loading...</p>) : (<table>
         {<tr key={"header"}>
           {Object.keys(info[0]).map((key) => (
@@ -31,7 +30,6 @@ function Weather() {
           ))}
         </tr>
       ))}</table>)}
-      </header>
     </div>
   );
 }
