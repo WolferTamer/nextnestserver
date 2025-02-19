@@ -54,6 +54,12 @@ module.exports = {
                     email:email
                 }
             })
+            if(!userObject[0]) {
+                res.status(403).json({
+                    error:"Invalid credentials"
+                })
+                return;
+            }
             let hashed = userObject[0].password
             bcrypt.compare(password, hashed, (err, data) => {
                 if(err) {
@@ -63,9 +69,13 @@ module.exports = {
                     return;
                 }
                 if(data) {
-                    const token = jwt.sign({ userId: userObject.userid }, process.env.SECRETKEY);
+                    const token = jwt.sign({ userId: userObject[0].userid }, process.env.SECRETKEY);
                     res.status(200).json({
-                        auth:token
+                        auth:token,
+                        user: {
+                            userid: userObject[0].userid,
+                            username: userObject[0].username
+                        }
                     })
                     return;
                 } else {

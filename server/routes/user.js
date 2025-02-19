@@ -1,5 +1,6 @@
 const { sequelize } = require("../db")
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken');
 
 module.exports = {
     //PARAMS: id (optional, the id number of the city), name (option, the name, or partial name, of the city)
@@ -26,14 +27,23 @@ module.exports = {
                 try{
                     await user.save()
                 } catch(e) {
+                    if(e.errors[0].message.includes('must be unique')) {
+                        res.status(400).json({
+                            error:"This email is already in use."
+                        })
+                    } else {
                     console.log(`user unsaved due to ${e}`)
-                    res.status(400).json({
-                        error:e
-                    })
+                        res.status(400).json({
+                            error:e.errors[0].message
+                        })
+                    }
                     return;
                 }
+                const token = jwt.sign({ userId: user.userid }, process.env.SECRETKEY);
                 res.json({
-                    message:`User with email ${user.email} created`
+                    message:`User with email ${user.email} created`,
+                    auth: token,
+                    user: user.userid
                 })
 
             }

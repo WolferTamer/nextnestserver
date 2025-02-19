@@ -3,6 +3,8 @@ import Taxes from './pages/Taxes';
 import Cities from './pages/Cities';
 import Weather from './pages/Weather';
 import City from './pages/City'
+import Login from './pages/Login'
+import Signup from './pages/Signup';
 const Routing = () => {
     return (
         <Router>
@@ -11,6 +13,8 @@ const Routing = () => {
                 <Route path="/city/:id" element={<City />}/>
                 <Route path="/tax" element={<Taxes />}/>
                 <Route path="/weather" element={<Weather />}/>
+                <Route path="/login" element={<Login />}/>
+                <Route path="/signup" element={<Signup/>}/>
             </Routes>
         </Router>
     )
