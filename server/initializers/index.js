@@ -4,7 +4,6 @@
 const resetcity = require('./resetcity.js');
 const resettax = require('./resettax.js')
 const resetweather = require('./resetweather.js')
-const definemodels = require('./definemodels.js')
 const resetincome = require('./resetincome.js')
 module.exports = async (args) => {
     

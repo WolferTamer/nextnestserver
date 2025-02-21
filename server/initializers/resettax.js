@@ -33,6 +33,7 @@ module.exports = async () => {
     for(let i = 0; i < cities.length; i++) {
         await sleep(50);
         const city = cities[i];
+        console.log(city.name)
         fetch(`https://api.api-ninjas.com/v1/propertytax?city=${city.name}&state=${getStateCode(city.state)}`, requestOptions)
             .then((response) => response.json())
             .then((result) => {
@@ -55,7 +56,7 @@ module.exports = async () => {
                     let sales = 0;
                     if(result.length > 0) {
                         for(const value of result) {
-                            sales+= parseFloat(value.total_rate);
+                            sales+= parseFloat(value.state_rate);
                         }
                         sales/= result.length
                     }

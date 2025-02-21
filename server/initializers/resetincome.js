@@ -46,6 +46,7 @@ module.exports = async () => {
                 },
                 include: [{model:tax}]})
                 for(let object of cities) {
+                    if(!object.tax) { continue; }
                     let taxobject = {}
                     let shouldadd = false
                     if(localincome != object.tax.localtaxes) {
