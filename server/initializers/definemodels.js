@@ -167,5 +167,30 @@ module.exports = () => {
     })
     weather.belongsTo(city)
 
+    const user = sequelize.define('user', {
+        userid: {
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey:true
+        },
+        email: {
+            type: Sequelize.STRING,
+            allowNull: false,
+            unique: true
+        },
+        password: {
+            type: Sequelize.STRING,
+            allowNull: false
+        },
+        username: {
+            type: Sequelize.STRING,
+            allowNull: false
+        },
+        salary: {
+            type: Sequelize.INTEGER,
+            allowNull: true
+        }
+    })
+
     sequelize.sync({alter: true})
 }

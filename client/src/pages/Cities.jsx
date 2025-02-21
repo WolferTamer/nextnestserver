@@ -45,7 +45,6 @@ const Cities = () => {
 
   return (
     <div className="Cities">
-      <header className="Cities-header">
       {!info[0] ? (<p>Loading...</p>) : (<table id="cities-table"><tbody>
         {<tr key="header">
           {Object.keys(info[0]).map((key) => (
@@ -64,7 +63,6 @@ const Cities = () => {
         </tr>
       ))}
       </tbody></table>)}
-      </header>
     </div>
   );
 }

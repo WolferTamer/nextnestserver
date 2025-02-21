@@ -16,7 +16,6 @@ function Taxes() {
 
   return (
     <div className="Tax">
-      <header className="Tax-header">
       {!info ? (<p>Loading...</p>) : (<table>
         {<tr key={"header"}>
           {Object.keys(info[0]).map((key) => (
@@ -31,7 +30,6 @@ function Taxes() {
           ))}
         </tr>
       ))}</table>)}
-      </header>
     </div>
   );
 }

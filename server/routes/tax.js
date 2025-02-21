@@ -22,7 +22,7 @@ module.exports = {
                     }
                 })
             } else {
-                taxes = await city.findAll()
+                taxes = await tax.findAll()
             }
             
 

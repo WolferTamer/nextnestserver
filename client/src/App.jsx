@@ -5,11 +5,20 @@ import logo from "/vite.svg";
 import "./App.css";
 import Routing from "./Routes"
 import Cities from "./pages/Cities";
+import Navigation from './Navigation'
+import Container from "react-bootstrap/esm/Container";
 
 function App() {
 
   return (
-    <Routing />
+    <>
+      <header>
+        <Navigation/>
+      </header>
+      <Container>
+        <Routing />
+      </Container>
+    </>
   );
 }
 

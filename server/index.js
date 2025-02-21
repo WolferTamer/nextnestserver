@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 3001;
 const {sequelize} = require("./db")
 const initialize = require('./initializers')
 const definemodels = require("./initializers/definemodels")
+const jwt = require('jsonwebtoken');
 definemodels()
 
 if(process.argv.length > 2) {
@@ -15,6 +16,18 @@ if(process.argv.length > 2) {
 
 //Requires CORS headers to run on localhost with react app
 app.use(cors());
+app.use(express.json())
+
+const authMiddleware = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.SECRETKEY, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+};
 
 //Reads every file inside /routes and uses them to initialize endpoints
 fs.readdir('server/routes', (err, files) => {
@@ -36,7 +49,7 @@ fs.readdir('server/routes', (err, files) => {
       console.log(`Initialized POST Method at ${methods["post"].route}`)
     } if (methods["put"]) {
       app.put(methods["put"].route, methods["put"].execute)
-      console.log(`Initialized put Method at ${methods["put"].route}`)
+      console.log(`Initialized PUT Method at ${methods["put"].route}`)
     } if (methods["delete"]) {
       app.delete(methods["delete"].route, methods["delete"].execute)
       console.log(`Initialized delete Method at ${methods["delete"].route}`)
