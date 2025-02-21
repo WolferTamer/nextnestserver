@@ -1,7 +1,8 @@
-//Will start with just displaying information (User ID, Username, Email)
-//Dropdown for salary, or int input
-//Other options to be decided
-// client/src/App.js
+//Add loading page to display while waiting for change
+//if error on load, revert to original salary
+//error should be moved to seperate variable instead of being inside user.
+
+
 import { useParams } from 'react-router-dom';
 import React from "react";
 import logo from "/vite.svg";
@@ -15,8 +16,10 @@ const User = () => {
   const { id } = useParams();
   let cookies = new Cookies()
   const token = cookies.get('token', {path:'/'})
-  console.log(token)
-  const [user, setUser] = React.useState({});
+  let [user, setUser] = React.useState({});
+  let [ogSalary, setOgSalary] = React.useState(0)
+  let [loading,setLoading] = React.useState(false)
+  let [errors, setErrors] = React.useState({})
   
   React.useEffect(() => {
     let headers = {
@@ -29,13 +32,15 @@ const User = () => {
       .then(data => {
         console.log(data)
         if(data.error) {
-          setUser({error:"No User Info"})
+          setErrors({...errors, user: "No User Gathered"})
           return;
         }
         let userInfo = data.user
         setUser(userInfo);
+        setOgSalary(userInfo.salary)
       })
       .catch((e) => {
+        setErrors({...errors, user: "No User Gathered"})
         console.log(e)
       });
   }, [id]);
@@ -46,6 +51,7 @@ const User = () => {
   }
 
   let handleSubmit = () => {
+    setLoading(true)
     let headers = {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
@@ -69,14 +75,23 @@ const User = () => {
       .then(data => {
         console.log(data)
         if(data.error) {
-          setUser({error:"User Not Updated"})
+          setErrors({...errors, salary: "Salary Unchanged"})
+          setUser({...user, salary:ogSalary})
+          setLoading(false)
           return;
         }
         let userInfo = data.user
+        delete errors.salary
+        setErrors({...errors})
         setUser(userInfo);
+        setOgSalary(userInfo.salary)
+        setLoading(false)
       })
       .catch((e) => {
         console.log(e)
+        setErrors({...errors, salary: "Salary Unchanged"})
+        setUser({...user, salary:ogSalary})
+        setLoading(false)
       });
   }
 
@@ -84,27 +99,32 @@ const User = () => {
     <div className="user">
       <header className="user-header">
         <h1>
-          {!user ? (<p>Loading</p>): user.error ? (<p>{user.error}</p>): user.username}
+          {!user ? (<p>Loading</p>): errors.user ? (<p>{errors.user}</p>): user.username}
         </h1>
       </header>
-      {!user ? (<p>Loading</p>): user.error ? (<p>"404 Not Found"</p>): 
-      (<table id="user-table">
-        <caption>User</caption>
-        <tbody>
-          
-          
-            {Object.keys(user).map((key) => (
-              <tr>
-                <td id={key}  className='table-header'>{key}</td>
-                <td>{user[key]}</td>
-              </tr>
-            ))}
-        </tbody>
-      </table>)}
+      <div>
+        <h4>
+          Username
+        </h4>
+        <p>
+          {!user? (<p>Loading</p>): errors.user ? (<p>{errors.user}</p>): user.email}
+        </p>
+      </div>
+      <div>
+        <h4>
+          User ID
+        </h4>
+        <p>
+          {!user? (<p>Loading</p>): errors.user ? (<p>{errors.user}</p>): user.userid}
+        </p>
+      </div>
       <Form>
         <Form.Group>
             <Form.Label>Salary</Form.Label>
-            <Form.Control type="number" value={user.salary? user.salary : 0} onChange={handleSalary}></Form.Control>
+            <Form.Control type="number" value={user.salary? user.salary : 0} onChange={handleSalary} disabled={loading} isInvalid={errors.salary}></Form.Control>
+            <Form.Control.Feedback type="invalid">
+                Error changing salary.
+            </Form.Control.Feedback>
         </Form.Group>
       </Form>
       <Button onClick={handleSubmit}>
