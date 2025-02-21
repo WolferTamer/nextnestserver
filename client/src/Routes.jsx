@@ -6,6 +6,7 @@ import City from './pages/City'
 import Login from './pages/Login'
 import Signup from './pages/Signup';
 import User from './pages/User'
+import Compare from './pages/Compare';
 const Routing = () => {
     return (
         <Router>
@@ -17,6 +18,7 @@ const Routing = () => {
                 <Route path="/login" element={<Login />}/>
                 <Route path="/signup" element={<Signup/>}/>
                 <Route path="/user/:id" element={<User/>}/>
+                <Route path="/city/:idA/:idB" element={<Compare/>}/>
             </Routes>
         </Router>
     )

@@ -4,6 +4,7 @@ import React from "react";
 import logo from "/vite.svg";
 import "../App.css";
 import "../City.css"
+import Cookies from 'universal-cookie';
 function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -12,12 +13,15 @@ function kToF(x) {
   return ((x - 273.15)*(9/5) + 32).toFixed(1);
 }
 const City = () => {
+  let cookies = new Cookies()
+  const token = cookies.get('token', {path:'/'})
   const { id } = useParams();
   const [city, setCity] = React.useState(null);
   const [tax, setTax] = React.useState(null)
   const [weather, setWeather] = React.useState(null)
   const [cityName, setName] = React.useState(null)
-  
+  const [incometax, setIncomeTax] = React.useState(null)
+
   React.useEffect(() => {
     // Fetch product data using the ID
     fetch(`/api/city?id=${id}`)
@@ -38,6 +42,34 @@ const City = () => {
           "Longitude:": city["lon"]
         }
         setCity(filteredData);
+        if(!token) { 
+          setIncomeTax({error: "No Salary Info"})
+          return;
+         }
+         let headers = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+        fetch(`/api/incometax?state=${filteredData["State:"]}`, {method:"get",headers: headers})
+      .then(res => res.json())
+      .then(data => {
+        if(data.error) {
+          setTax({error:"No Income Info"})
+          return;
+        }
+
+        if(data.incometaxes && data.incometaxes.length <= 0) {
+          setTax({error:"No Income Info"})
+          return;
+        }
+        let tax = data.incometaxes[0]
+        
+        let filteredData = {
+          "Bracket:": `$${tax.bracket}`,
+          "Rate:": `${tax.rate}%`,
+        }
+        setIncomeTax(filteredData)
+      });
       })
       .catch((e) => {
         console.log(e)
@@ -140,6 +172,23 @@ const City = () => {
           </tr>
           <tr className='flipped-table'>
             {Object.values(weather).map((key) => (
+              <td className='flipped-table'>{key}</td>
+            ))}
+          </tr>
+        </tbody>
+      </table>)}
+      {!incometax ? (<p>Loading</p>): incometax.error ? (<p>{incometax.error}</p>): 
+      (<table>
+        <caption>Income Tax</caption>
+        <tbody>
+          
+          <tr className='flipped-table'>
+            {Object.keys(incometax).map((key) => (
+              <th id={key} className='table-header flipped-table'>{key}</th>
+            ))}
+          </tr>
+          <tr className='flipped-table'>
+            {Object.values(incometax).map((key) => (
               <td className='flipped-table'>{key}</td>
             ))}
           </tr>

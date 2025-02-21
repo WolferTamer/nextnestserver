@@ -188,7 +188,8 @@ module.exports = () => {
         },
         salary: {
             type: Sequelize.INTEGER,
-            allowNull: true
+            allowNull: true,
+            default: 0
         }
     })
 
