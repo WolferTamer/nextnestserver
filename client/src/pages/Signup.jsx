@@ -154,7 +154,8 @@ const Signup = () => {
         }
     }
 
-    return (<Form>
+    return (
+    <div><Form>
         <Form.Group className="mb-3" controlId="formBasicEmail">
             <Form.Label>Email address</Form.Label>
             <Form.Control type="email" placeholder="Enter email" value={email} onChange={onEmailChange} disabled={loading} isInvalid={errors.email}/>
@@ -182,7 +183,9 @@ const Signup = () => {
         <Button variant="primary" type="button" onClick={handleSignup} disabled={Object.keys(errors).length > 0}>
             Submit
         </Button>
-    </Form>)
+    </Form>
+    <a href="/login">Click Here If You Already Have An Account</a>
+    </div>)
 }
 
 export default Signup

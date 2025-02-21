@@ -106,25 +106,28 @@ const Login = () => {
                 .catch((error) => console.error(error));
         }
 
-    return (<Form>
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Email address</Form.Label>
-            <Form.Control type="email" placeholder="Enter email" value={email} onChange={onEmailChange} disabled={loading} isInvalid={errors.email}/>
-            <Form.Control.Feedback type="invalid">
-                {errors.email}
-            </Form.Control.Feedback>
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="formBasicPassword">
-            <Form.Label>Password</Form.Label>
-            <Form.Control type="password" placeholder="Password" value={password} onChange={onPasswordChange} disabled={loading} isInvalid={errors.password}/>
-            <Form.Control.Feedback type="invalid">
-                {errors.password}
-            </Form.Control.Feedback>
-        </Form.Group>
-        <Button variant="primary" type="button" onClick={handleSignup} disabled={Object.keys(errors).length > 0}>
-            Submit
-        </Button>
-    </Form>)
+    return (<div>
+        <Form>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+                <Form.Label>Email address</Form.Label>
+                <Form.Control type="email" placeholder="Enter email" value={email} onChange={onEmailChange} disabled={loading} isInvalid={errors.email}/>
+                <Form.Control.Feedback type="invalid">
+                    {errors.email}
+                </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicPassword">
+                <Form.Label>Password</Form.Label>
+                <Form.Control type="password" placeholder="Password" value={password} onChange={onPasswordChange} disabled={loading} isInvalid={errors.password}/>
+                <Form.Control.Feedback type="invalid">
+                    {errors.password}
+                </Form.Control.Feedback>
+            </Form.Group>
+            <Button variant="primary" type="button" onClick={handleSignup} disabled={Object.keys(errors).length > 0}>
+                Submit
+            </Button>
+        </Form>
+        <a href="/signup">Click Here If You Need To Create An Account</a>
+    </div>)
 }
 
 export default Login
