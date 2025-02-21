@@ -60,14 +60,6 @@ module.exports = {
         route:"/api/user",
         execute: async (req, res) => {
             const usermodel = sequelize.models.user
-            const token = req.headers.authorization?.split(' ')[1];
-            if(!token) {
-                res.status(403).json({
-                    error: "No Authorization",
-                });
-                return;
-            }
-            jwt.verify(token, process.env.SECRETKEY, async (err, u) => {
                 if(!req.body) {
                     res.status(400).json({
                         error:"No body attached."
@@ -103,12 +95,19 @@ module.exports = {
                     })
 
                 }
-            })
         }
     },
     put: {
         route:"/api/user",
         execute: async (req, res) => {
+            const token = req.headers.authorization?.split(' ')[1];
+            if(!token) {
+                res.status(403).json({
+                    error: "No Authorization",
+                });
+                return;
+            }
+            jwt.verify(token, process.env.SECRETKEY, async (err, u) => {
             let id = req.query.id
             if(!id) {
                 res.status(400).json({
@@ -170,6 +169,7 @@ module.exports = {
                 })
                 return;
             }
-        }
+        })
+    }
     }
 }
