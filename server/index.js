@@ -49,7 +49,7 @@ fs.readdir('server/routes', (err, files) => {
       console.log(`Initialized POST Method at ${methods["post"].route}`)
     } if (methods["put"]) {
       app.put(methods["put"].route, methods["put"].execute)
-      console.log(`Initialized put Method at ${methods["put"].route}`)
+      console.log(`Initialized PUT Method at ${methods["put"].route}`)
     } if (methods["delete"]) {
       app.delete(methods["delete"].route, methods["delete"].execute)
       console.log(`Initialized delete Method at ${methods["delete"].route}`)
