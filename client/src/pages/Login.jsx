@@ -96,9 +96,9 @@ const Login = () => {
                     } else {
                         console.log(result.user.username)
                         const cookies = new Cookies();
-                        cookies.set('token', result.auth, { path: '/' });
-                        cookies.set('username', result.user.username, { path: '/' });
-                        cookies.set('userid', result.user.userid, { path: '/' });
+                        localStorage.setItem('token', result.auth);
+                        localStorage.setItem('username', result.user.username);
+                        localStorage.setItem('userid', result.user.userid);
                         navigate(`/`)
                     }
                     setLoading(false);

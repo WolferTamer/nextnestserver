@@ -90,9 +90,9 @@ const Signup = () => {
                 } else {
                     console.log(result)
                     const cookies = new Cookies();
-                    cookies.set('token', result.auth, { path: '/' });
-                    cookies.set('username', username, { path: '/' });
-                    cookies.set('userid', result.user, { path: '/' });
+                    localStorage.setItem('token', result.auth);
+                    localStorage.setItem('username', username);
+                    localStorage.setItem('userid', result.user);
                     navigate(`/`)
                 }
                 setLoading(false);

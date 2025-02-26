@@ -17,7 +17,7 @@ const User = () => {
   let navigate = useNavigate()
   const { id } = useParams();
   let cookies = new Cookies()
-  const token = cookies.get('token', {path:'/'})
+  const token = localStorage.getItem('token')
   let [user, setUser] = React.useState({});
   let [ogSalary, setOgSalary] = React.useState(0)
   let [loading,setLoading] = React.useState(false)
@@ -98,9 +98,9 @@ const User = () => {
   }
 
   const handleLogout = () => {
-    cookies.remove('token', {path: "/"})
-    cookies.remove('username', {path: "/"})
-    cookies.remove('userid', {path: "/"})
+    localStorage.removeItem('token')
+    localStorage.removeItem('username')
+    localStorage.removeItem('userid')
     navigate("/")
   }
 

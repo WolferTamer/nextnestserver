@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -6,9 +7,15 @@ import Cookies from 'universal-cookie';
 
 function Navigation() {
   const cookies = new Cookies();
-  let auth = cookies.get('token', { path: '/' })
-  let username = cookies.get('username', { path: '/' })
-  let userid = cookies.get('userid', { path: '/' })
+  let [auth, setAuth] = useState(null)
+  let [username, setUsername] = useState(null)
+  let [userid, setUserid] = useState(null)
+  console.log(auth)
+  useEffect(() => {
+    setAuth(localStorage.getItem('token'))
+    setUsername(localStorage.getItem('username'))
+    setUserid(localStorage.getItem('userid'))
+  }, [])
 
   return (
     <Navbar expand="lg" className="bg-body-tertiary" data-bs-theme="dark">

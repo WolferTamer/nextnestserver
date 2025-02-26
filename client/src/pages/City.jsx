@@ -14,7 +14,7 @@ function kToF(x) {
 }
 const City = () => {
   let cookies = new Cookies()
-  const token = cookies.get('token', {path:'/'})
+  const token = localStorage.getItem('token')
   const { id } = useParams();
   const [city, setCity] = React.useState(null);
   const [tax, setTax] = React.useState(null)
