@@ -11,11 +11,13 @@ import "../City.css"
 import Cookies from 'universal-cookie';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import { useNavigate } from "react-router-dom";
 
 const User = () => {
+  let navigate = useNavigate()
   const { id } = useParams();
   let cookies = new Cookies()
-  const token = cookies.get('token', {path:'/'})
+  const token = localStorage.getItem('token')
   let [user, setUser] = React.useState({});
   let [ogSalary, setOgSalary] = React.useState(0)
   let [loading,setLoading] = React.useState(false)
@@ -95,6 +97,13 @@ const User = () => {
       });
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('username')
+    localStorage.removeItem('userid')
+    navigate("/")
+  }
+
   return (
     <div className="user">
       <header className="user-header">
@@ -130,6 +139,11 @@ const User = () => {
       <Button onClick={handleSubmit}>
             Submit Changes
       </Button>
+      <div>
+        <Button variant='danger' onClick={handleLogout}>
+          Log Out
+        </Button>
+      </div>
     </div>
   );
 }

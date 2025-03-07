@@ -3,6 +3,7 @@
 import React from "react";
 import logo from "/vite.svg";
 import "./App.css";
+import "./City.css"
 import Routing from "./Routes"
 import Cities from "./pages/Cities";
 import Navigation from './Navigation'

@@ -24,6 +24,12 @@ module.exports = {
                 //Fetch user from SQL
                 //If mismatch return 403
                 //If match return 200 with account information excluding password
+                if(err || !user) {
+                    res.status(403).json({
+                        error: "Not Authorized",
+                    });
+                    return;
+                }
                 let tokenid = user.userId
                 if(id == tokenid) {
                     let userobj = (await sequelize.models.user.findAll({where: {

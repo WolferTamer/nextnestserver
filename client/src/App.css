@@ -63,3 +63,16 @@
 #cities-table svg {
   margin-left: 5px;
 }
+
+.navbar-default {
+  background-color: #3F4739 !important;
+}
+
+.navbar-default * {
+  color: #E1F4CB !important;
+}
+
+.align-items-stretch {
+  vertical-align: text-top;
+  align-items: stretch;
+}

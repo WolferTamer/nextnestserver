@@ -10,3 +10,20 @@ tr.flipped-table { display: block; float: left; }
 .table-header {
     font-weight: bold;
 }
+
+.negative-compare {
+    color: red !important;
+    border-color: black;
+}
+
+.positive-compare {
+    color: limegreen !important;
+    border-color: black;
+}
+
+.thead-dark th {
+    border-color: #000000;
+    background-color: #555555;
+    color:  #BBBBBB;
+
+}
