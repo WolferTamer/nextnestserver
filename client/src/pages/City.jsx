@@ -8,6 +8,7 @@ import "../App.css";
 import "../City.css"
 import Cookies from 'universal-cookie';
 import { useNavigate } from "react-router-dom";
+import Table from 'react-bootstrap/Table'
 function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -142,94 +143,66 @@ const City = () => {
   }
 
   return (
-    <Stack direction='horizontal' className="align-items-stretch">
+    
       <div className="city">
         <header className="city-header">
           <h1>
             {!city ? (<p>Loading</p>): city.error ? (<p>{city.error}</p>): cityName}
           </h1>
         </header>
-        {!city ? (<p>Loading</p>): city.error ? (<p>"404 Not Found"</p>): 
-        (<table id="city-table">
-          <caption>City</caption>
-          <tbody>
-            
-            
-              {Object.keys(city).map((key) => (
-                <tr>
-                  <td id={key}  className='table-header'>{key}</td>
-                  <td>{city[key]}</td>
-                </tr>
-              ))}
-          </tbody>
-        </table>)}
-        {!tax ? (<p>Loading</p>): tax.error ? (<p>{tax.error}</p>): 
-        (<table>
-          <caption>Taxes</caption>
-          <tbody>
-            
-            <tr className='flipped-table'>
-              {Object.keys(tax).map((key) => (
-                <th id={key} className='table-header flipped-table'>{key}</th>
-              ))}
-            </tr>
-            <tr className='flipped-table'>
-              {Object.values(tax).map((key) => (
-                <td className='flipped-table'>{key}</td>
-              ))}
-            </tr>
-          </tbody>
-        </table>)}
-        {!weather ? (<p>Loading</p>): weather.error ? (<p>{weather.error}</p>): 
-        (<table>
-          <caption>Weather</caption>
-          <tbody>
-            
-            <tr className='flipped-table'>
-              {Object.keys(weather).map((key) => (
-                <th id={key} className='table-header flipped-table'>{key}</th>
-              ))}
-            </tr>
-            <tr className='flipped-table'>
-              {Object.values(weather).map((key) => (
-                <td className='flipped-table'>{key}</td>
-              ))}
-            </tr>
-          </tbody>
-        </table>)}
-        {!incometax ? (<p>Loading</p>): incometax.error ? (<p>{incometax.error}</p>): 
-        (<table>
-          <caption>Income Tax</caption>
-          <tbody>
-            
-            <tr className='flipped-table'>
-              {Object.keys(incometax).map((key) => (
-                <th id={key} className='table-header flipped-table'>{key}</th>
-              ))}
-            </tr>
-            <tr className='flipped-table'>
-              {Object.values(incometax).map((key) => (
-                <td className='flipped-table'>{key}</td>
-              ))}
-            </tr>
-          </tbody>
-        </table>)}
+        <Table responsive striped id="compare-table">
+      <tbody>
+        <tr className='thead-dark'>
+          <th></th>
+          <th>{!city ? (<p>Loading</p>): city.error ? (<p>"404 Not Found"</p>): cityName}
+          </th>
+          <th>{!city ? (<p>Loading</p>): city.error ? (<p>"404 Not Found"</p>): (<Form>
+                    <Form.Select onChange={onSelect}>
+                      {
+                        cityList ? cityList.map((item) => (
+                          <option value={item.id} selected={cityName === item.name ? "selected" : ""}>{item.name}</option>
+                        )) : null
+                      }
+                    </Form.Select>
+                  </Form>
+                )}</th>
+        </tr>
+      {!city ? (<p>Loading</p>): city.error ? (<p>"404 Not Found"</p>): 
+        Object.keys(city).map((key) => (
+              <tr>
+                <td id={key}  className='table-header'>{key}</td>
+                <td>{city[key]}</td>
+                <td></td>
+                <></>
+              </tr>
+            ))}
+      <tr className='thead-dark'>
+        <th colSpan={3}>Taxes</th>
+      </tr>
+      {!tax ? (<p>Loading</p>): tax.error ? (<p>{tax.error}</p>): 
+      Object.keys(tax).map((key) => (
+              <tr>
+                <td id={key}  className='table-header'>{key}</td>
+                <td>{tax[key]}</td>
+                <td></td>
+                <></>
+              </tr>
+            ))}
+      <tr className='thead-dark'>
+        <th colSpan={3}>Weather</th>
+      </tr>
+      {!weather ? (<p>Loading</p>): weather.error ? (<p>{weather.error}</p>): 
+      Object.keys(weather).map((key) => (
+              <tr>
+                <td id={key}  className='table-header'>{key}</td>
+                <td>{weather[key]}</td>
+                <td></td>
+                <></>
+              </tr>
+            ))}
+        </tbody>
+      </Table>
       </div>
-      <div>
-        <Form>
-          <Form.Label>
-            Compare to:
-          </Form.Label>
-          <Form.Select onChange={onSelect}>
-            {
-              cityList ? cityList.map((item) => (
-                <option value={item.id}>{item.name}</option>
-              )) : null
-            }
-          </Form.Select>
-        </Form>
-      </div>
-    </Stack>
   );
 }
 
