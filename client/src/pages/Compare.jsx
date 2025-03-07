@@ -8,6 +8,8 @@ import React from "react";
 import "../App.css";
 import "../City.css"
 import Table from 'react-bootstrap/Table'
+import Form from 'react-bootstrap/Form'
+import { useNavigate } from 'react-router-dom';
 function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -25,6 +27,27 @@ const Compare = () => {
   const [weatherB, setWeatherB] = React.useState(null)
   const [cityNameA, setNameA] = React.useState(null)
   const [cityNameB, setNameB] = React.useState(null)
+  const [cityList, setCityList] = React.useState(null)
+  
+    React.useEffect(() => {
+      // Fetch product data using the ID
+      fetch("/api/city")
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("Data: ", data)
+          setCityList(data.cities)
+        })
+    })
+
+  let navigate = useNavigate()
+  let onSelectB = (e) => {
+    let id = e.target.value
+    navigate(`/city/${idA}/${id}`)
+  }
+  let onSelectA = (e) => {
+    let id = e.target.value
+    navigate(`/city/${id}/${idB}`)
+  }
   
   React.useEffect(() => {
     // Fetch product data using the ID
@@ -181,8 +204,27 @@ const Compare = () => {
       <tbody>
         <tr className='thead-dark'>
           <th>#</th>
-          <th>{!cityA ? (<p>Loading</p>): cityA.error ? (<p>"404 Not Found"</p>): cityNameA}</th>
-          <th>{!cityB ? (<p>Loading</p>): cityB.error ? (<p>"404 Not Found"</p>): cityNameB}</th>
+          <th>{!cityA ? (<p>Loading</p>): cityA.error ? (<p>"404 Not Found"</p>): (<Form>
+                    <Form.Select onChange={onSelectA}>
+                      {
+                        cityList ? cityList.map((item) => (
+                          <option value={item.id} selected={cityNameA === item.name ? "selected" : ""}>{item.name}</option>
+                        )) : null
+                      }
+                    </Form.Select>
+                  </Form>
+                )}
+          </th>
+          <th>{!cityB ? (<p>Loading</p>): cityB.error ? (<p>"404 Not Found"</p>): (<Form>
+                    <Form.Select onChange={onSelectB}>
+                      {
+                        cityList ? cityList.map((item) => (
+                          <option value={item.id} selected={cityNameB === item.name ? "selected" : ""}>{item.name}</option>
+                        )) : null
+                      }
+                    </Form.Select>
+                  </Form>
+                )}</th>
         </tr>
       {!cityA ? (<p>Loading</p>): cityA.error ? (<p>"404 Not Found"</p>): 
         Object.keys(cityA).map((key) => (

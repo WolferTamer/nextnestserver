@@ -18,7 +18,7 @@ function Navigation() {
   }, [])
 
   return (
-    <Navbar expand="lg" className="bg-body-tertiary" data-bs-theme="dark">
+    <Navbar expand="lg" className="bg-body-tertiary navbar-default"> 
       <Container fluid>
         <Navbar.Brand href="/">Next Nest</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
