@@ -9,6 +9,9 @@ import "../City.css"
 import Cookies from 'universal-cookie';
 import { useNavigate } from "react-router-dom";
 import Table from 'react-bootstrap/Table'
+import { Hint, Typeahead } from 'react-bootstrap-typeahead';
+import FloatingLabel from 'react-bootstrap/esm/FloatingLabel';
+
 function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -25,17 +28,22 @@ const City = () => {
   const [weather, setWeather] = React.useState(null)
   const [cityName, setName] = React.useState(null)
   const [incometax, setIncomeTax] = React.useState(null)
-  const [cityList, setCityList] = React.useState(null)
+  const [cityList, setCityList] = React.useState([])
 
   React.useEffect(() => {
     // Fetch product data using the ID
     fetch("/api/city")
       .then((res) => res.json())
       .then((data) => {
-        console.log("Data: ", data)
-        setCityList(data.cities)
+        let list = []
+        for(const city of data.cities) {
+          list.push({label:city.name,value:city.id})
+        }
+        list.sort((a, b) => a.label.localeCompare(b.label));
+        console.log(list)
+        setCityList(list)
       })
-  })
+  }, [])
 
   React.useEffect(() => {
     // Fetch product data using the ID
@@ -65,20 +73,28 @@ const City = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         }
-        fetch(`/api/incometax?state=${filteredData["State:"]}`, {method:"get",headers: headers})
+      let salary = localStorage.getItem("salary")
+      if(!salary) {return}
+      fetch(`/api/incometax?state=${filteredData["State:"]}`, {method:"get",headers: headers})
       .then(res => res.json())
       .then(data => {
         if(data.error) {
-          setTax({error:"No Income Info"})
+          setIncomeTax({error:"No Income Info"})
           return;
         }
 
         if(data.incometaxes && data.incometaxes.length <= 0) {
-          setTax({error:"No Income Info"})
+          setIncomeTax({error:"No Income Info"})
           return;
         }
         let tax = data.incometaxes[0]
         
+        for(let i = 1; i < data.incometaxes.length; i++) {
+          if(data.incometaxes[i].bracket > salary) {
+            tax = data.incometaxes[i-1]
+          }
+        }
+
         let filteredData = {
           "Bracket:": `$${tax.bracket}`,
           "Rate:": `${tax.rate}%`,
@@ -138,7 +154,7 @@ const City = () => {
   }, [id]);
   let navigate = useNavigate()
   let onSelect = (e) => {
-    let id = e.target.value
+    let id = e[0].value
     navigate(`${id}`)
   }
 
@@ -156,14 +172,23 @@ const City = () => {
           <th></th>
           <th>{!city ? (<p>Loading</p>): city.error ? (<p>"404 Not Found"</p>): cityName}
           </th>
-          <th>{!city ? (<p>Loading</p>): city.error ? (<p>"404 Not Found"</p>): (<Form>
-                    <Form.Select onChange={onSelect}>
-                      {
-                        cityList ? cityList.map((item) => (
-                          <option value={item.id} selected={cityName === item.name ? "selected" : ""}>{item.name}</option>
-                        )) : null
-                      }
-                    </Form.Select>
+          <th>{cityList.length < 1 ? (<p>Loading</p>): (<Form>
+                    <Typeahead id="select-city-2" options={cityList} onChange={onSelect}
+                    placeholder='Choose a city...'
+                    renderInput={({ inputRef, referenceElementRef, ...inputProps }) => {
+                      return (
+                        <Hint>
+                          
+                            <Form.Control
+                              {...inputProps}
+                              ref={(node) => {
+                                inputRef(node);
+                                referenceElementRef(node);
+                              }}
+                            />
+                        </Hint>
+                      );
+                    }}/>
                   </Form>
                 )}</th>
         </tr>
@@ -200,6 +225,22 @@ const City = () => {
                 <></>
               </tr>
             ))}
+            {!incometax || incometax.error ? "" : (
+          <tr className='thead-dark'>
+            <th colSpan={3}>Income Tax</th>
+          </tr>
+        
+      )}
+      {!incometax || incometax.error ? "" : (
+        Object.keys(incometax).map((key) => (
+          <tr>
+                <td id={key}  className='table-header'>{key}</td>
+                <td>{incometax[key]}</td>
+                <td></td>
+                <></>
+          </tr>
+        ))
+      )}
         </tbody>
       </Table>
       </div>
