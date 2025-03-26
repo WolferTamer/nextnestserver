@@ -10,6 +10,7 @@ import "../City.css"
 import Table from 'react-bootstrap/Table'
 import Form from 'react-bootstrap/Form'
 import { useNavigate } from 'react-router-dom';
+import { Hint, Typeahead } from 'react-bootstrap-typeahead';
 function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -18,6 +19,7 @@ function kToF(x) {
   return ((x - 273.15)*(9/5) + 32).toFixed(1);
 }
 const Compare = () => {
+  const token = localStorage.getItem('token')
   const { idA, idB } = useParams();
   const [cityA, setCityA] = React.useState(null);
   const [cityB, setCityB] = React.useState(null);
@@ -27,25 +29,44 @@ const Compare = () => {
   const [weatherB, setWeatherB] = React.useState(null)
   const [cityNameA, setNameA] = React.useState(null)
   const [cityNameB, setNameB] = React.useState(null)
-  const [cityList, setCityList] = React.useState(null)
+  const [cityList, setCityList] = React.useState([])
+  const [incometaxA,setIncomeTaxA] = React.useState(null)
+  const [incometaxB,setIncomeTaxB] = React.useState(null)
+  const [selectedA, setSelectedA] = React.useState([])
+  const [selectedB, setSelectedB] = React.useState([])
   
     React.useEffect(() => {
       // Fetch product data using the ID
       fetch("/api/city")
         .then((res) => res.json())
         .then((data) => {
-          console.log("Data: ", data)
-          setCityList(data.cities)
+          let list = []
+          for(const city of data.cities) {
+            list.push({label:city.name,value:city.id})
+          }
+          list.sort((a, b) => a.label.localeCompare(b.label));
+          console.log(list)
+          setCityList(list)
         })
-    })
+    }, [])
 
   let navigate = useNavigate()
   let onSelectB = (e) => {
-    let id = e.target.value
+    let newCity = e[0]
+    setSelectedB(e)
+    if(!newCity || newCity.value == idB) {
+      return
+    }
+    let id = newCity.value
     navigate(`/city/${idA}/${id}`)
   }
   let onSelectA = (e) => {
-    let id = e.target.value
+    let newCity = e[0]
+    setSelectedA(e)
+    if(!newCity || newCity.value == idA) {
+      return
+    }
+    let id = newCity.value
     navigate(`/city/${id}/${idB}`)
   }
   
@@ -60,6 +81,7 @@ const Compare = () => {
         }
         let cityA = data.cities[0]
         setNameA(cityA.name)
+        setSelectedA([{label:cityA.name, value:idA}])
         let filteredData = {
           "State:": cityA["state"],
           "Population:": numberWithCommas(cityA["population"]),
@@ -69,6 +91,49 @@ const Compare = () => {
           "Longitude:": cityA["lon"]
         }
         setCityA(filteredData);
+        if(!token) { 
+          setIncomeTaxA({error: "No Salary Info"})
+          return;
+         }
+         let headers = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+        let salary = localStorage.getItem("salary")
+      if(!salary) {return}
+      fetch(`/api/incometax?state=${filteredData["State:"]}`, {method:"get",headers: headers})
+      .then(res => res.json())
+      .then(data => {
+        console.log(data)
+        if(data.error || !data.incometaxes) {
+          setIncomeTaxA({
+            "Bracket:": `N/A`,
+            "Rate:": `N/A`
+          })
+          return;
+        }
+
+        if(data.incometaxes && data.incometaxes.length <= 0) {
+          setIncomeTaxA({
+            "Bracket:": `N/A`,
+            "Rate:": `N/A`
+          })
+          return;
+        }
+        let tax = data.incometaxes[0]
+        
+        for(let i = 1; i < data.incometaxes.length; i++) {
+          if(data.incometaxes[i].bracket > salary) {
+            tax = data.incometaxes[i-1]
+          }
+        }
+
+        let filteredData = {
+          "Bracket:": `$${tax.bracket}`,
+          "Rate:": `${tax.rate}%`,
+        }
+        setIncomeTaxA(filteredData)
+      });
       })
       .catch((e) => {
         console.log(e)
@@ -132,6 +197,7 @@ const Compare = () => {
         }
         let cityB = data.cities[0]
         setNameB(cityB.name)
+        setSelectedB([{label:cityB.name,value:idB}])
         let filteredData = {
           "State:": cityB["state"],
           "Population:": numberWithCommas(cityB["population"]),
@@ -141,6 +207,49 @@ const Compare = () => {
           "Longitude:": cityB["lon"]
         }
         setCityB(filteredData);
+        if(!token) { 
+          setIncomeTaxB({error: "No Salary Info"})
+          return;
+         }
+         let headers = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+        let salary = localStorage.getItem("salary")
+      if(!salary) {return}
+      fetch(`/api/incometax?state=${filteredData["State:"]}`, {method:"get",headers: headers})
+      .then(res => res.json())
+      .then(data => {
+        console.log(data)
+        if(data.error || !data.incometaxes) {
+          setIncomeTaxB({
+            "Bracket:": `N/A`,
+            "Rate:": `N/A`
+          })
+          return;
+        }
+
+        if(data.incometaxes && data.incometaxes.length <= 0) {
+          setIncomeTaxB({
+            "Bracket:": `N/A`,
+            "Rate:": `N/A`
+          })
+          return;
+        }
+        let tax = data.incometaxes[0]
+        
+        for(let i = 1; i < data.incometaxes.length; i++) {
+          if(data.incometaxes[i].bracket > salary) {
+            tax = data.incometaxes[i-1]
+          }
+        }
+
+        let filteredData = {
+          "Bracket:": `$${tax.bracket}`,
+          "Rate:": `${tax.rate}%`,
+        }
+        setIncomeTaxB(filteredData)
+      });
       })
       .catch((e) => {
         console.log(e)
@@ -204,26 +313,48 @@ const Compare = () => {
       <tbody>
         <tr className='thead-dark'>
           <th>#</th>
-          <th>{!cityA ? (<p>Loading</p>): cityA.error ? (<p>"404 Not Found"</p>): (<Form>
-                    <Form.Select onChange={onSelectA}>
-                      {
-                        cityList ? cityList.map((item) => (
-                          <option value={item.id} selected={cityNameA === item.name ? "selected" : ""}>{item.name}</option>
-                        )) : null
-                      }
-                    </Form.Select>
+          <th>{cityList.length < 1 || !cityA ? (<p>Loading</p>): (<Form>
+                    <Typeahead id="select-city-2" options={cityList} onChange={onSelectA}
+                    placeholder='Choose a city...'
+                    renderInput={({ inputRef, referenceElementRef, ...inputProps }) => {
+                      return (
+                        <Hint>
+                          
+                            <Form.Control
+                              {...inputProps}
+                              ref={(node) => {
+                                inputRef(node);
+                                referenceElementRef(node);
+                              }}
+                            />
+                        </Hint>
+                      );
+                    }}
+                    selected={selectedA}/>
                   </Form>
+                  
                 )}
           </th>
-          <th>{!cityB ? (<p>Loading</p>): cityB.error ? (<p>"404 Not Found"</p>): (<Form>
-                    <Form.Select onChange={onSelectB}>
-                      {
-                        cityList ? cityList.map((item) => (
-                          <option value={item.id} selected={cityNameB === item.name ? "selected" : ""}>{item.name}</option>
-                        )) : null
-                      }
-                    </Form.Select>
+          <th>{cityList.length < 1 || !cityB ? (<p>Loading</p>): (<Form>
+                    <Typeahead id="select-city-2" options={cityList} onChange={onSelectB}
+                    placeholder='Choose a city...'
+                    renderInput={({ inputRef, referenceElementRef, ...inputProps }) => {
+                      return (
+                        <Hint>
+                          
+                            <Form.Control
+                              {...inputProps}
+                              ref={(node) => {
+                                inputRef(node);
+                                referenceElementRef(node);
+                              }}
+                            />
+                        </Hint>
+                      );
+                    }}
+                    selected={selectedB}/>
                   </Form>
+                  
                 )}</th>
         </tr>
       {!cityA ? (<p>Loading</p>): cityA.error ? (<p>"404 Not Found"</p>): 
@@ -267,6 +398,22 @@ const Compare = () => {
                 <></>
               </tr>
             ))}
+        {!incometaxA || incometaxA.error ? "" : (
+          <tr className='thead-dark'>
+            <th colSpan={3}>Income Tax</th>
+          </tr>
+        
+      )}
+      {!incometaxA || !incometaxB || (incometaxA.error && incometaxB.error) ? "" : (
+        Object.keys(incometaxA).map((key) => (
+          <tr>
+                <td id={key}  className='table-header'>{key}</td>
+                <td>{incometaxA[key]}</td>
+                <td>{incometaxB[key]}</td>
+                <></>
+          </tr>
+        ))
+      )}
         </tbody>
       </Table>
     </div>

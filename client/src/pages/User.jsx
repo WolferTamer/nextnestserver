@@ -88,6 +88,7 @@ const User = () => {
         setUser(userInfo);
         setOgSalary(userInfo.salary)
         setLoading(false)
+        localStorage.setItem("salary", userInfo.salary)
       })
       .catch((e) => {
         console.log(e)
