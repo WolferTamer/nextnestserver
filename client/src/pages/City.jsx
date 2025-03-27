@@ -2,15 +2,13 @@
 import { useParams } from 'react-router-dom';
 import React from "react";
 import Form from 'react-bootstrap/Form';
-import logo from "/vite.svg";
-import Stack from 'react-bootstrap/Stack';
 import "../App.css";
 import "../City.css"
 import Cookies from 'universal-cookie';
 import { useNavigate } from "react-router-dom";
 import Table from 'react-bootstrap/Table'
 import { Hint, Typeahead } from 'react-bootstrap-typeahead';
-import FloatingLabel from 'react-bootstrap/esm/FloatingLabel';
+import {APIProvider, Map} from '@vis.gl/react-google-maps';
 
 function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -40,7 +38,6 @@ const City = () => {
           list.push({label:city.name,value:city.id})
         }
         list.sort((a, b) => a.label.localeCompare(b.label));
-        console.log(list)
         setCityList(list)
       })
   }, [])
@@ -56,13 +53,22 @@ const City = () => {
         }
         let city = data.cities[0]
         setName(city.name)
+        let map = (
+          <APIProvider apiKey={import.meta.env.VITE_GOOGLE_API} onLoad={() => console.log('Maps API has loaded.')}>
+          <Map
+          defaultZoom={5}
+          defaultCenter={ { lat: city["lat"], lng: city["lon"] }}
+          containerStyle={{ position: 'relative', width: '100%', height: '200px'}}
+          onCameraChanged={ (ev) =>
+            console.log('camera changed:', ev.detail.center, 'zoom:', ev.detail.zoom)
+          }/>
+        </APIProvider>)
         let filteredData = {
           "State:": city["state"],
           "Population:": numberWithCommas(city["population"]),
           "Density:": `${city["density"]} per mile^2`,
           "Growth:": `${city["growth"]*100}%`,
-          "Lattitude:": city["lat"],
-          "Longitude:": city["lon"]
+          "Location:": map
         }
         setCity(filteredData);
         if(!token) { 
@@ -196,7 +202,7 @@ const City = () => {
         Object.keys(city).map((key) => (
               <tr>
                 <td id={key}  className='table-header'>{key}</td>
-                <td>{city[key]}</td>
+                <td height={key !== "Location:" ? "" : "200px"}>{city[key]}</td>
                 <td></td>
                 <></>
               </tr>
