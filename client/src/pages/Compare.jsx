@@ -11,6 +11,8 @@ import Table from 'react-bootstrap/Table'
 import Form from 'react-bootstrap/Form'
 import { useNavigate } from 'react-router-dom';
 import { Hint, Typeahead } from 'react-bootstrap-typeahead';
+import {AdvancedMarker, APIProvider, Map, Marker, Pin} from '@vis.gl/react-google-maps';
+
 function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -81,14 +83,31 @@ const Compare = () => {
         }
         let cityA = data.cities[0]
         setNameA(cityA.name)
+        let location = { lat: cityA["lat"], lng: cityA["lon"] }
+        let map = (
+                  <APIProvider apiKey={import.meta.env.VITE_GOOGLE_API} onLoad={() => console.log('Maps API has loaded.')}>
+                  <Map
+                  defaultZoom={5}
+                  defaultCenter={location}
+                  center={ location}
+                  containerStyle={{ position: 'relative', width: '100%', height: '200px'}}
+                  onCameraChanged={ (ev) =>
+                    console.log('camera changed:', ev.detail.center, 'zoom:', ev.detail.zoom)
+                  }>
+                    <Marker
+                    key={"city"}
+                    position={location}>
+                      <Pin/>
+                    </Marker>
+                  </Map>
+                </APIProvider>)
         setSelectedA([{label:cityA.name, value:idA}])
         let filteredData = {
           "State:": cityA["state"],
           "Population:": numberWithCommas(cityA["population"]),
           "Density:": `${cityA["density"]} per mile^2`,
           "Growth:": `${cityA["growth"]*100}%`,
-          "Lattitude:": cityA["lat"],
-          "Longitude:": cityA["lon"]
+          "Location:": map
         }
         setCityA(filteredData);
         if(!token) { 
@@ -197,14 +216,31 @@ const Compare = () => {
         }
         let cityB = data.cities[0]
         setNameB(cityB.name)
+        let location = { lat: cityB["lat"], lng: cityB["lon"] }
+        let map = (
+                  <APIProvider apiKey={import.meta.env.VITE_GOOGLE_API} onLoad={() => console.log('Maps API has loaded.')}>
+                  <Map
+                  defaultZoom={5}
+                  defaultCenter={location}
+                  center={ location}
+                  containerStyle={{ position: 'relative', width: '100%', height: '200px'}}
+                  onCameraChanged={ (ev) =>
+                    console.log('camera changed:', ev.detail.center, 'zoom:', ev.detail.zoom)
+                  }>
+                    <Marker
+                    key={"city"}
+                    position={location}>
+                      <Pin background={'#FBBC04'} glyphColor={'#000'} borderColor={'#000'} />
+                    </Marker>
+                  </Map>
+                </APIProvider>)
         setSelectedB([{label:cityB.name,value:idB}])
         let filteredData = {
           "State:": cityB["state"],
           "Population:": numberWithCommas(cityB["population"]),
           "Density:": `${cityB["density"]} per mile^2`,
           "Growth:": `${cityB["growth"]*100}%`,
-          "Lattitude:": cityB["lat"],
-          "Longitude:": cityB["lon"]
+          "Location:": map
         }
         setCityB(filteredData);
         if(!token) { 
@@ -361,8 +397,8 @@ const Compare = () => {
         Object.keys(cityA).map((key) => (
               <tr>
                 <td id={key}  className='table-header'>{key}</td>
-                <td>{cityA[key]}</td>
-                <td>{!cityB ? "loading...": cityB.error ? "An Error Occured": cityB[key]}</td>
+                <td height={key !== "Location:" ? "" : "200px"}>{cityA[key]}</td>
+                <td height={key !== "Location:" ? "" : "200px"}>{!cityB ? "loading...": cityB.error ? "An Error Occured": cityB[key]}</td>
                 <></>
               </tr>
             ))}
