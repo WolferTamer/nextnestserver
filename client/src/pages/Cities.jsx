@@ -6,6 +6,7 @@ import "../App.css";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import Filter from "../components/Filter";
 
 const Cities = () => {
   const [info, setData] = React.useState([]);
@@ -45,6 +46,7 @@ const Cities = () => {
 
   return (
     <div className="Cities">
+      <Filter/>
       {!info[0] ? (<p>Loading...</p>) : (<table id="cities-table"><tbody>
         {<tr key="header">
           {Object.keys(info[0]).map((key) => (

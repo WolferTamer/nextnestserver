@@ -12,6 +12,7 @@ function Navigation() {
   let [userid, setUserid] = useState(null)
   console.log(auth)
   useEffect(() => {
+    console.log("updating NavBar")
     setAuth(localStorage.getItem('token'))
     setUsername(localStorage.getItem('username'))
     setUserid(localStorage.getItem('userid'))
