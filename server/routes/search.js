@@ -7,7 +7,7 @@ const {sequelize} = require("../db")
 const Sequelize = require("sequelize")
 
 const convertWeather = (options) => {
-    let weather = {model:sequelize.models.weather, attributes:['cityId'], where:{}}
+    let weather = {model:sequelize.models.weather, attributes:[], where:{}}
     let summer = options%4;
     if(summer > 0) {
         //Considered cold if less than 15 degrees celcius, hot if above 27 degrees celcius

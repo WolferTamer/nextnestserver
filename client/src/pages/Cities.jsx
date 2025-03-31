@@ -44,9 +44,13 @@ const Cities = () => {
     setSorting({ key: key, ascending: ascending });
   }
 
+  const filterCities = (e) => {
+    setData(e)
+  }
+
   return (
     <div className="Cities">
-      <Filter/>
+      <Filter filterCities={filterCities}/>
       {!info[0] ? (<p>Loading...</p>) : (<table id="cities-table"><tbody>
         {<tr key="header">
           {Object.keys(info[0]).map((key) => (
