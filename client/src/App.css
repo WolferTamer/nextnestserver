@@ -39,6 +39,9 @@
   font-family: Arial, Helvetica, sans-serif;
   border-collapse: collapse;
   width: 100%;
+  display: block;
+  overflow-x:auto;
+  white-space: nowrap;
 }
 
 #cities-table td, #cities-table th {
@@ -47,6 +50,7 @@
 }
 
 #cities-table tr:nth-child(even){background-color: #D0D0D0;}
+#cities-table tr:nth-child(odd){background-color: #F0F0F0;}
 
 #cities-table tr:hover {background-color: #A0A0A0;}
 
@@ -54,14 +58,18 @@
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: left;
-  background-color: #04AA6D;
-  color: white;
+  background-color: #442B48;
+  color: #E7BBE3;
   overflow: hidden;
   white-space: nowrap;
 }
 
 #cities-table svg {
   margin-left: 5px;
+}
+
+body {
+  background-color: #E1F4CB;
 }
 
 .navbar-default {
@@ -75,4 +83,24 @@
 .align-items-stretch {
   vertical-align: text-top;
   align-items: stretch;
+}
+
+.filter-button {
+  border-radius: 1.5rem;
+  color: #3F4739;
+}
+
+.filter-button-unchecked {
+  background-color: #E1F4CB;
+  border-color: #3F4739;
+
+}
+
+.filter-button-checked {
+  background-color: #E7BBE3;
+}
+
+.cities{
+  margin-left:3vw;
+  margin-right:3vw;
 }

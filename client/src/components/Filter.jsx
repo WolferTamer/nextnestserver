@@ -3,10 +3,12 @@ import SearchBar from './SearchBar';
 import Stack from 'react-bootstrap/Stack'
 import WeatherFilter from './WeatherFilter'
 import Button from 'react-bootstrap/esm/Button';
+import TaxFilter from './TaxFilter';
 
 function Filter( {filterCities} ) {
   let name = ""
   let weather = 0
+  let tax = {}
 
   let handleName = (e) => {
     name = e
@@ -16,15 +18,29 @@ function Filter( {filterCities} ) {
     weather = e
   }
 
+  let handleTax = (e) => {
+    tax = e
+  }
+
   let search = () => {
-    if((!name || name.length == 0) && weather == 0) {
+    if((!name || name.length == 0) && weather == 0 && (Object.keys(tax).length<= 0)) {
       console.log("No parameters given")
       return;
     }
-    fetch(`/api/search?${name && name.length > 0 ? `name=${name}`: ""}${weather > 0 ? `weather=${weather}`: ""}`)
+    let params = []
+    if(name && name.length > 0) {
+      params.push(`name=${name}`)
+    }
+    if(weather > 0) {
+      params.push(`${params.length > 0 ? "&" : ""}weather=${weather}`)
+    }
+    if(Object.keys(tax).length > 0) {
+      params.push(`${params.length > 0 ? "&" : ""}salestax=${tax.salestax/100}&localtax=${!tax.localtax}`)
+      params.push(`&married=${tax.married}&maxincome=${tax.incometax}&salary=${tax.salary}`)
+    }
+    fetch(`/api/search?${params.join("")}`)
     .then((res) => {console.log("Result: ", res); return res.json()})
     .then((data) => {
-      console.log("Data: ", data)
       if(data.cities) {
         let newdata = data.cities
         for(let i = 0; i <  newdata.length; i++) {
@@ -41,6 +57,7 @@ function Filter( {filterCities} ) {
           }
 
           if(data.cities[i].incometax) {
+            console.log(data.cities[i].incometax)
             for(let key of Object.keys(data.cities[i].incometax)) {
               newdata[i][key] = data.cities[i].incometax[key]
             }
@@ -59,11 +76,14 @@ function Filter( {filterCities} ) {
     })
   }
   return (
-    <Stack direction="horizontal">
-      <SearchBar superChange={handleName}></SearchBar>
-      <WeatherFilter superChange={handleWeather}/>
-      <Button onClick={search}>Search</Button>
-    </Stack>
+    <div className="my-3">
+      <Stack direction="horizontal">
+        <SearchBar superChange={handleName}></SearchBar>
+        <WeatherFilter superChange={handleWeather} />
+        <TaxFilter superChange={handleTax}/>
+        <Button onClick={search}>Search</Button>
+      </Stack>
+    </div>
   );
 }
 

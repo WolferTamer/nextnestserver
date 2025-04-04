@@ -54,9 +54,14 @@ module.exports = {
 
             const name = req.query.name
             const weatherbinary = req.query.weather
+            const salestax = parseFloat(req.query.salestax)
+            const allowlocal = typeof req.query.localtax === "string" ? !(req.query.localtax.toLowerCase() === "false") : true
+            const salary = parseInt(req.query.salary)
+            const maxincome = parseFloat(req.query.maxincome)
+            const married = typeof req.query.married === "string" ? req.query.married.toLowerCase() === "true" : false
             
             //Must have at least one search method
-            if(!name && !weatherbinary) {
+            if(!name && !weatherbinary && !salestax && !salary && !maxincome && (allowlocal == undefined)) {
                 res.status(400).json({
                     error: 'No search parameters provided.'
                 })
@@ -93,9 +98,87 @@ module.exports = {
                 query.include.push(convertWeather(weatherbinary))
             }
 
-            let cities = await city.findAll(query)
+            if(salestax || allowlocal !== "undefined") {
+                let taxQuery = {
+                    model:sequelize.models.tax, 
+                    attributes:[], 
+                    where:{}
+                }
+                if(salestax) {
+                    if(typeof salestax  !== "number") {
+                        res.status(400).json({
+                            error: 'Sales Tax must be a number'
+                        })
+                        return; 
+                    } else {
+                        taxQuery.attributes.push('salestax')
+                        taxQuery.where['salestax'] = {[Sequelize.Op.lt]: salestax}
+                    }
+                }
 
-            res.json({cities: cities})
+                if(typeof allowlocal !== "undefined") {
+                    if(typeof allowlocal !== "boolean") {
+                        res.status(400).json({
+                            error: 'Local tax must be a boolean'
+                        })
+                        return; 
+                    } else if (!allowlocal) {
+                        taxQuery.attributes.push('localtaxes')
+                        taxQuery.where[Sequelize.Op.or] = [{'localtaxes':{[Sequelize.Op.eq]: null}}, {'localtaxes':{[Sequelize.Op.eq]: false}}]
+                    }
+                }
+                if(taxQuery.attributes.length > 0) {
+                    query.include.push(taxQuery)
+                }
+            }
+            let income = {}
+            if(maxincome && typeof salary !== "undefined") {
+                if(typeof maxincome !== "number" && typeof salary !== "number") {
+                    res.status(400).json({
+                        error: 'Max Income and Salary must be numbers and both be provided'
+                    })
+                    return; 
+                } else {
+                    //Find Income tax of same state, highest income tax without being greater than salary,
+                    //and the rate is lower than maxincome while matching married/unmarried. Include if there
+                    //is no income for the state.
+                    let it = await sequelize.models.incometax.findAll({
+                        model:sequelize.models.tax, 
+                        attributes:["state","bracket","rate","married"], 
+                        where:{
+                            "bracket":{[Sequelize.Op.lte]:salary},
+                            "married":married
+                        }
+                    })
+                    
+
+                    for(let state of it) {
+                        let obj = state.dataValues
+                        const key = obj.state
+                        if(!income[key] || income[key].bracket < obj.bracket) {
+                            delete obj.state
+                            income[key] = obj
+                        }
+                    }
+                }
+            }
+
+            let cities = await city.findAll(query)
+            if(Object.keys(income).length > 0) {
+                for(let i = 0; i < cities.length; i++) {
+                    let state = cities[i].state
+                    if(income[state] && income[state].rate > maxincome) {
+                        cities.splice(i,1)
+                        i--
+                    } else if(income[state]) {
+                        cities[i].dataValues.incometax = income[state]
+                    } else {
+                        cities[i].dataValues.incometax = {bracket:0, rate:0, married: married}
+                    }
+                }
+            }
+
+            res.json({cities: cities, incometax:income})
             
         }
     }

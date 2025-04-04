@@ -9,7 +9,7 @@ function SearchBar( {superChange} ) {
     superChange(e.target.value)
   }
   return (
-    <InputGroup className="mb-3">
+    <InputGroup>
         <Form.Control
           placeholder="City name..."
           aria-label="City Name"

@@ -65,32 +65,32 @@ function WeatherFilter({superChange}) {
     superChange(newTotal)
   }
   return (
-    <Dropdown>
-      <Dropdown.Toggle variant="success" id="dropdown-basic">
+    <Dropdown className="mx-3">
+      <Dropdown.Toggle variant="info" id="dropdown-basic" className={`filter-button ${totalVal == 0 ? "filter-button-unchecked" : "filter-button-checked"}`}>
         Weather
       </Dropdown.Toggle>
 
       <Dropdown.Menu>
         <Form>
             <Form.Label>Summer Temp.</Form.Label>
-            <Form.Check type="radio" label="Cool" id="cool-summer" name="summer" value="1" onClick={handleSummer} checked={totalVal%4 == 1}/>
-            <Form.Check type="radio" label="Moderate" id="med-summer" name="summer" value="2" onClick={handleSummer} checked={totalVal%4 == 2}/>
-            <Form.Check type="radio" label="Hot" id="hot-summer" name="summer" value="3" onClick={handleSummer} checked={totalVal%4 == 3}/>
+            <Form.Check readOnly={true} type="radio" label="Cool" id="cool-summer" name="summer" value="1" onClick={handleSummer} checked={totalVal%4 == 1}/>
+            <Form.Check readOnly={true} type="radio" label="Moderate" id="med-summer" name="summer" value="2" onClick={handleSummer} checked={totalVal%4 == 2}/>
+            <Form.Check readOnly={true} type="radio" label="Hot" id="hot-summer" name="summer" value="3" onClick={handleSummer} checked={totalVal%4 == 3}/>
 
             <Form.Label>Winter Temp.</Form.Label>
-            <Form.Check type="radio" label="Cold" id="cool-winter" name="winter" value="1" onClick={handleWinter} checked={Math.floor(totalVal/4)%4 == 1}/>
-            <Form.Check type="radio" label="Moderate" id="med-winter" name="winter" value="2" onClick={handleWinter} checked={Math.floor(totalVal/4)%4 == 2}/>
-            <Form.Check type="radio" label="Warm" id="hot-winter" name="winter" value="3" onClick={handleWinter} checked={Math.floor(totalVal/4)%4 == 3}/>
+            <Form.Check readOnly={true} type="radio" label="Cold" id="cool-winter" name="winter" value="1" onClick={handleWinter} checked={Math.floor(totalVal/4)%4 == 1}/>
+            <Form.Check readOnly={true} type="radio" label="Moderate" id="med-winter" name="winter" value="2" onClick={handleWinter} checked={Math.floor(totalVal/4)%4 == 2}/>
+            <Form.Check readOnly={true} type="radio" label="Warm" id="hot-winter" name="winter" value="3" onClick={handleWinter} checked={Math.floor(totalVal/4)%4 == 3}/>
 
             <Form.Label>Rain</Form.Label>
-            <Form.Check type="radio" label="Little" id="little-rain" name="rain" value="1" onClick={handleRain} checked={Math.floor(totalVal/16)%4 == 1}/>
-            <Form.Check type="radio" label="Some" id="some-rain" name="rain" value="2" onClick={handleRain} checked={Math.floor(totalVal/16)%4 == 2}/>
-            <Form.Check type="radio" label="Lots" id="lots-rain" name="rain" value="3" onClick={handleRain} checked={Math.floor(totalVal/16)%4 == 3}/>
+            <Form.Check readOnly={true} type="radio" label="Little" id="little-rain" name="rain" value="1" onClick={handleRain} checked={Math.floor(totalVal/16)%4 == 1}/>
+            <Form.Check readOnly={true} type="radio" label="Some" id="some-rain" name="rain" value="2" onClick={handleRain} checked={Math.floor(totalVal/16)%4 == 2}/>
+            <Form.Check readOnly={true} type="radio" label="Lots" id="lots-rain" name="rain" value="3" onClick={handleRain} checked={Math.floor(totalVal/16)%4 == 3}/>
 
             <Form.Label>Humidity</Form.Label>
-            <Form.Check type="radio" label="Dry" id="dry-humidity" name="humidity" value="1" onClick={handleHumidity} checked={Math.floor(totalVal/64)%4 == 1}/>
-            <Form.Check type="radio" label="Moderate" id="med-humidity" name="humidity" value="2" onClick={handleHumidity} checked={Math.floor(totalVal/64)%4 == 2}/>
-            <Form.Check type="radio" label="Humid" id="humid-humidity" name="humidity" value="3" onClick={handleHumidity} checked={Math.floor(totalVal/64)%4 == 3}/>
+            <Form.Check readOnly={true} type="radio" label="Dry" id="dry-humidity" name="humidity" value="1" onClick={handleHumidity} checked={Math.floor(totalVal/64)%4 == 1}/>
+            <Form.Check readOnly={true} type="radio" label="Moderate" id="med-humidity" name="humidity" value="2" onClick={handleHumidity} checked={Math.floor(totalVal/64)%4 == 2}/>
+            <Form.Check readOnly={true} type="radio" label="Humid" id="humid-humidity" name="humidity" value="3" onClick={handleHumidity} checked={Math.floor(totalVal/64)%4 == 3}/>
         </Form>
       </Dropdown.Menu>
     </Dropdown>
