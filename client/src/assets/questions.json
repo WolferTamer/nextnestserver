@@ -1,0 +1,177 @@
+[
+    {
+        "id":"heat-scale",
+        "type":"scale",
+        "question":"On a scale of 1-10, how much do you like summer heat?",
+        "min":-5,
+        "max":5,
+        "step":1,
+        "min-text":"0",
+        "max-text":"10",
+        "key":"julytemp",
+        "multiplier":1
+    },{
+        "id":"heat-choice",
+        "type":"multiple-choice",
+        "question":"Do you like hot summers?",
+        "options": [
+            {
+                "value":-5,
+                "text":"No, I prefer it cold."
+            },
+            {
+                "value":0,
+                "text":"I don't mind either way."
+            },
+            {
+                "value":2,
+                "text":"I prefer it warmer."
+            },
+            {
+                "value":5,
+                "text":"Bring on the heat!."
+            }
+        ],
+        "key":"julytemp"
+    },{
+        "id":"snow-choice",
+        "type":"multiple-choice",
+        "question":"How much snow can you tolerate?",
+        "options": [
+            {
+                "value":-5,
+                "text":"None. I don't like it."
+            },
+            {
+                "value":-1,
+                "text":"I'm indifferent to snow."
+            },
+            {
+                "value":2,
+                "text":"I would like some snow."
+            },
+            {
+                "value":5,
+                "text":"Snow is awesome!"
+            }
+        ],
+        "key":"janprecipitation"
+    },{
+        "id":"sales-scale",
+        "type":"scale",
+        "question":"On a scale of 1-10, how much do you dislike taxes?",
+        "min":-5,
+        "max":5,
+        "step":1,
+        "min-text":"0",
+        "max-text":"10",
+        "key":"salestax",
+        "multiplier":-1
+    },{
+        "id":"buying-prop",
+        "type":"multiple-choice",
+        "question":"Are you planning on buying property or renting?",
+        "options": [
+            {
+                "value":-5,
+                "text":"I will most likely  be renting."
+            },
+            {
+                "value":5,
+                "text":"I will most likely buy a house."
+            },
+            {
+                "value":0,
+                "text":"I'm not sure/Other."
+            }
+        ],
+        "key":"propertytaxquarter"
+    },{
+        "id":"rain-multiple",
+        "type":"multiple-choice",
+        "question":"Do you like rain?",
+        "options": [
+            {
+                "value":-5,
+                "text":"No, rain annoys me."
+            },
+            {
+                "value":1,
+                "text":"I'm alright with rain."
+            },
+            {
+                "value":5,
+                "text":"I love rain!"
+            },
+            {
+                "value":0,
+                "text":"I'm not sure."
+            }
+        ],
+        "key":"julyprecipitation"
+    },{
+        "id":"rain-scale",
+        "type":"scale",
+        "question":"On a scale of 1-10, how much do you like rain?",
+        "min":-5,
+        "max":5,
+        "step":1,
+        "min-text":"0",
+        "max-text":"10",
+        "key":"julyprecipitation",
+        "multiplier":1
+    },{
+        "id":"density-scale",
+        "type":"scale",
+        "question":"How much do you like cities?",
+        "min":-5,
+        "max":5,
+        "step":1,
+        "min-text":"0",
+        "max-text":"10",
+        "key":"density",
+        "multiplier":1
+    },{
+        "id":"growth-multiple",
+        "type":"multiple-choice",
+        "question":"Do you want to live in a growing city?",
+        "options": [
+            {
+                "value":-5,
+                "text":"No, I want to live somewhere small."
+            },
+            {
+                "value":-1,
+                "text":"I'd prefer a shrinking city."
+            },
+            {
+                "value":2,
+                "text":"I want to live somewhere slightly growing."
+            },
+            {
+                "value":5,
+                "text":"Yes!"
+            }
+        ],
+        "key":"growth"
+    },{
+        "id":"humidity-multiple",
+        "type":"multiple-choice",
+        "question":"Do you care about humidity?",
+        "options": [
+            {
+                "value":-5,
+                "text":"I can't stand high humidity."
+            },
+            {
+                "value":0,
+                "text":"I don't care about humidity."
+            },
+            {
+                "value":3,
+                "text":"I'm completely fine with humidity."
+            }
+        ],
+        "key":"humidity"
+    }
+]

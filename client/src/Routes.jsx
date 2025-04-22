@@ -7,6 +7,8 @@ import Login from './pages/Login'
 import Signup from './pages/Signup';
 import User from './pages/User'
 import Compare from './pages/Compare';
+import Questions from './pages/Questions';
+import Results from './pages/Results';
 const Routing = () => {
     return (
         <Router>
@@ -19,6 +21,8 @@ const Routing = () => {
                 <Route path="/signup" element={<Signup/>}/>
                 <Route path="/user/:id" element={<User/>}/>
                 <Route path="/city/:idA/:idB" element={<Compare/>}/>
+                <Route path="/quiz" element={<Questions/>}/>
+                <Route path="/results" element={<Results></Results>}/>
             </Routes>
         </Router>
     )
