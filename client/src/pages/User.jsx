@@ -102,6 +102,7 @@ const User = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('username')
     localStorage.removeItem('userid')
+    window.dispatchEvent(new Event('storage'));
     navigate("/")
   }
 

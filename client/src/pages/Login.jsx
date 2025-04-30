@@ -99,6 +99,7 @@ const Login = () => {
                         localStorage.setItem('token', result.auth);
                         localStorage.setItem('username', result.user.username);
                         localStorage.setItem('userid', result.user.userid);
+                        window.dispatchEvent(new Event('storage'));
                         navigate(`/`)
                     }
                     setLoading(false);

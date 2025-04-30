@@ -18,6 +18,20 @@ function Navigation() {
     setUserid(localStorage.getItem('userid'))
   }, [])
 
+  useEffect(() => {
+    function checkUserData() {
+        setAuth(localStorage.getItem('token'))
+      setUsername(localStorage.getItem('username'))
+      setUserid(localStorage.getItem('userid'))
+    }
+  
+    window.addEventListener('storage', checkUserData)
+  
+    return () => {
+      window.removeEventListener('storage', checkUserData)
+    }
+  }, [])
+
   return (
     <Navbar expand="lg" className="bg-body-tertiary navbar-default"> 
       <Container fluid>

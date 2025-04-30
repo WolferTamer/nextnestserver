@@ -93,6 +93,7 @@ const Signup = () => {
                     localStorage.setItem('token', result.auth);
                     localStorage.setItem('username', username);
                     localStorage.setItem('userid', result.user);
+                    window.dispatchEvent(new Event('storage'));
                     navigate(`/`)
                 }
                 setLoading(false);
