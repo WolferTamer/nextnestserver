@@ -17,11 +17,11 @@ function MultipleChoice(params) {
   return (
     <div className="multiple-choice">
       <div>
-        <h1>{title}</h1>
-        <Form>
+        <h1 className="mx-auto center-text">{title}</h1>
+        <Form className="center-text">
             <Form.Group>
                 {options.map( (opt) =>
-                (<Form.Check type="radio" name="multi-choice" label={opt.text} value={opt.value} checked={opt.value == value} onClick={onChoose}/>)
+                (<Form.Check className="multi-choice-option" type="radio" name="multi-choice" label={opt.text} value={opt.value} checked={opt.value == value} onClick={onChoose}/>)
                 )}
             </Form.Group>
         </Form>

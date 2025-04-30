@@ -112,23 +112,28 @@ function Questions() {
 
   return (
     <div className="Questions">
+      <div className="d-flex justify-content-end mt-1">
+        <Button onClick={handleSubmit} disabled={canSubmit}>
+          Submit
+        </Button>
+      </div>
       {questionOrder.map((i,x) => {
         if (curQuestion != x) {return}
         if(questions[i].type === "multiple-choice") {
           return (<MultipleChoice className={curQuestion == x ? "" : "invisible"} title={questions[i].question} options={questions[i].options} defaultValue={questionValues[x]} index={x} callback={handleValueChange}/>)
         }
         else if (questions[i].type === "scale") {
-          return (<Scale className={curQuestion == x ? "" : "invisible"} title={questions[i].question} max={questions[i].max} min={questions[i].min} step={questions[i].step} defaultValue={questionValues[x]} index={x} callback={handleValueChange}/>)
+          return (<Scale className={curQuestion == x ? "" : "invisible"} title={questions[i].question} max={questions[i].max} min={questions[i].min} step={questions[i].step} 
+            maxtext={questions[i]["max-text"]} mintext={questions[i]["min-text"]} defaultValue={questionValues[x]} index={x} callback={handleValueChange}/>)
         }
       })}
-      <Pagination>
+      <div className="align-bottom">
+      <Pagination className="text-xs-center justify-content-center">
         <Pagination.Prev onClick={()=> handleClick(Math.max(curQuestion-1,0))} key={-1}></Pagination.Prev>
-        {questionValues.map((obj,i) => (<Pagination.Item onClick={()=> handleClick(i)} key={i} active={curQuestion==i}>{i+1}</Pagination.Item>))}
-        <Pagination.Next onClick={()=> handleClick(Math.min(curQuestion+1, questionOrder.length))} key={100}></Pagination.Next>
+        {questionValues.map((obj,i) => Math.abs(curQuestion-i) < 3 ? (<Pagination.Item  onClick={()=> handleClick(i)} key={i} active={curQuestion==i}>{i+1}</Pagination.Item>) : "")}
+        <Pagination.Next onClick={()=> handleClick(Math.min(curQuestion+1, questionOrder.length-1))} key={100}></Pagination.Next>
       </Pagination>
-      <Button onClick={handleSubmit} disabled={canSubmit}>
-        Submit
-      </Button>
+      </div>
       {
         error ? 
         (<Alert key="danger" variant="danger" onClose={() => {setError(null)}} dismissible>

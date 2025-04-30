@@ -26,8 +26,7 @@ function Navigation() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link href="/">Cities</Nav.Link>
-            <Nav.Link href="/tax">Taxes</Nav.Link>
-            <Nav.Link href="/weather">Weather</Nav.Link>
+            <Nav.Link href="/quiz">Quiz</Nav.Link>
           </Nav>
         </Navbar.Collapse>
         <Navbar.Collapse className="justify-content-end">

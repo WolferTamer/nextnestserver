@@ -12,7 +12,6 @@ function Results() {
   const [cities, setCities] = React.useState([]);
 
   let location = useLocation()
-  console.log(location.state.cities)
 
   useEffect( ()=> {
     if(location.state) {
@@ -22,7 +21,9 @@ function Results() {
             .then((response) => response.json())
             .then((result)=> {
                 nc.push(result.cities[0])
-                setCities(nc)
+                if(nc.length >= location.state.cities.length) {
+                  setCities(nc)
+                }
             })
             .catch((error) => console.error(error))
         }
@@ -35,7 +36,7 @@ function Results() {
     return (
       <Container fluid="md">
         <Row>
-          {cities.map((city) => {console.log(city); return (
+          {cities.map((city) => { return (
             <Col sm={5}>
               <Card style={{ width: '18rem' }}>
                   <Card.Img variant="top" src={cityjpg} />
