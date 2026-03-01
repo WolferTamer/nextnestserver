@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 let port = process.env.PORT || 3000;
-let APIURL = process.env.API_URL || "http://127.0.0.1:3001"
+let APIURL = process.env.VITE_API_URL || "http://127.0.0.1:3001"
 
 // https://vite.dev/config/
 export default defineConfig({
