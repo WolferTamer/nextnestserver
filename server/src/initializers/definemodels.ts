@@ -195,6 +195,4 @@ module.exports = () => {
       defaultValue: 0,
     },
   });
-
-  sequelize.sync({ alter: true });
 };

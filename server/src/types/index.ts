@@ -1,4 +1,8 @@
-import { userGetPayload } from "../generated/prisma/models";
+import {
+  cityGetPayload,
+  userGetPayload,
+  weatherGetPayload,
+} from "../generated/prisma/models";
 
 export type UserDto = userGetPayload<{
   select: {
@@ -23,3 +27,10 @@ export type User = userGetPayload<{
 }>;
 
 export type UserWithPassword = userGetPayload<{}>;
+
+export type Weather = weatherGetPayload<{}>;
+
+export type WeatherDto = weatherGetPayload<{}>;
+
+export type City = cityGetPayload<{}>;
+export type CityDto = cityGetPayload<{}>;

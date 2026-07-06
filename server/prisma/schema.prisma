@@ -48,6 +48,7 @@ model tax {
   marriedstandarddeduction Int?
   city                     city     @relation(fields: [cityId], references: [id], onDelete: Cascade, map: "tax_ibfk_1")
 
+  @@unique([cityId])
   @@index([cityId], map: "cityId")
 }
 
@@ -78,5 +79,6 @@ model weather {
   cityId            Int
   city              city     @relation(fields: [cityId], references: [id], onDelete: Cascade, map: "weather_ibfk_1")
 
+  @@unique([cityId])
   @@index([cityId], map: "cityId")
 }

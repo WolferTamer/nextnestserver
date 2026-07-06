@@ -1,8 +1,8 @@
-import { sequelize } from "../db";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
-const usermodel = sequelize.models.user;
+import { userRepository } from "../repositories/userRepository";
+import { isErr } from "../utils/errorGuards";
 
 export const get = {
   route: "/api/auth",
@@ -16,7 +16,6 @@ export const get = {
     }
     jwt.verify(token, process.env.SECRETKEY!, (err, user) => {
       if (err) return res.sendStatus(403);
-      req.user = user;
       res.status(200).json({
         auth: token,
       });
@@ -47,18 +46,19 @@ export const post = {
       });
       return;
     }
-    let userObject = await usermodel.findAll({
-      where: {
-        email: email,
-      },
-    });
-    if (!userObject[0]) {
+    let userObject = await userRepository.findByIdIncludePassword(user.id);
+    if (isErr(userObject)) {
       res.status(403).json({
         error: "Invalid credentials",
       });
       return;
+    } else if (!userObject) {
+      res.status(404).json({
+        error: "No user by that ID",
+      });
+      return;
     }
-    let hashed = userObject[0].password;
+    let hashed = userObject.password;
     bcrypt.compare(password, hashed, (err, data) => {
       if (err) {
         res.status(500).json({
@@ -68,14 +68,14 @@ export const post = {
       }
       if (data) {
         const token = jwt.sign(
-          { userId: userObject[0].userid },
+          { userId: userObject.userid },
           process.env.SECRETKEY!,
         );
         res.status(200).json({
           auth: token,
           user: {
-            userid: userObject[0].userid,
-            username: userObject[0].username,
+            userid: userObject.userid,
+            username: userObject.username,
           },
         });
         return;
