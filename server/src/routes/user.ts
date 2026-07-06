@@ -1,7 +1,10 @@
-import { sequelize } from "../db";
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { userRepository } from "../repositories/userRepository";
+import { UserDto } from "../types";
+import { userCreateInput, userUpdateInput } from "../generated/prisma/models";
+import { isErr } from "../utils/errorGuards";
 
 //PARAMS: id (optional, the id number of the city), name (option, the name, or partial name, of the city)
 //RESULTS: No params results in a list of all cities.
@@ -30,29 +33,31 @@ export const get = {
         });
         return;
       }
+
+      if (typeof user === "string" || !user.userId) {
+        res.status(403).json({
+          error: "Not Authorized",
+        });
+        return;
+      }
+
       let tokenid = user.userId;
       if (id == tokenid) {
-        let userobj = (
-          await sequelize.models.user.findAll({
-            where: {
-              userid: id,
-            },
-          })
-        )[0];
-        if (!userobj) {
+        let findResult = await userRepository.findById(tokenid);
+        if (!findResult) {
           res.status(400).json({
             error: "No User with that ID",
           });
           return;
+        } else if (isErr(findResult)) {
+          res.status(400).json({
+            error: findResult.error,
+          });
+          return;
         }
-        const filteredObj = {
-          userid: id,
-          username: userobj.username,
-          email: userobj.email,
-          salary: userobj.salary,
-        };
+        const dto: UserDto = findResult;
         res.status(200).json({
-          user: filteredObj,
+          user: dto,
         });
         return;
       } else {
@@ -67,38 +72,30 @@ export const get = {
 export const post = {
   route: "/api/user",
   execute: async (req: Request, res: Response) => {
-    const usermodel = sequelize.models.user;
     if (!req.body) {
       res.status(400).json({
         error: "No body attached.",
       });
       return;
     }
-    let userobject = req.body.user;
-    let user = usermodel.build(userobject);
+    let user: userCreateInput = req.body.user;
     if (user) {
       let hashed = await bcrypt.hash(user.password, 10);
       user.password = hashed;
-      try {
-        await user.save();
-      } catch (e) {
-        if (e.errors[0].message.includes("must be unique")) {
-          res.status(400).json({
-            error: "This email is already in use.",
-          });
-        } else {
-          console.log(`user unsaved due to ${e}`);
-          res.status(400).json({
-            error: e.errors[0].message,
-          });
-        }
+      const newUser = await userRepository.create(user);
+
+      if (isErr(newUser)) {
+        res.status(400).json({ error: newUser.error });
         return;
       }
-      const token = jwt.sign({ userId: user.userid }, process.env.SECRETKEY);
+      const token = jwt.sign(
+        { userId: newUser.userid },
+        process.env.SECRETKEY!,
+      );
       res.status(203).json({
         message: `User with email ${user.email} created`,
         auth: token,
-        user: user.userid,
+        user: newUser.userid,
       });
     }
   },
@@ -113,7 +110,7 @@ export const put = {
       });
       return;
     }
-    jwt.verify(token, process.env.SECRETKEY, async (err, u) => {
+    jwt.verify(token, process.env.SECRETKEY!, async (err, u) => {
       let id = req.query.id;
       if (!id) {
         res.status(400).json({
@@ -121,7 +118,6 @@ export const put = {
         });
         return;
       }
-      const usermodel = sequelize.models.user;
       if (!req.body) {
         res.status(400).json({
           error: "No body attached.",
@@ -130,7 +126,7 @@ export const put = {
       }
 
       let body = req.body;
-      let updateBody = {};
+      let updateBody: userUpdateInput = {};
       if (
         body.salary &&
         (typeof body.salary !== "number" ||
@@ -151,37 +147,18 @@ export const put = {
         });
         return;
       }
-      try {
-        await usermodel.update(updateBody, {
-          where: {
-            userid: id,
-          },
-        });
-        let userobj = (
-          await usermodel.findAll({
-            where: {
-              userid: id,
-            },
-          })
-        )[0];
-
-        const filteredObj = {
-          userid: id,
-          username: userobj.username,
-          email: userobj.email,
-          salary: userobj.salary,
-        };
-        res.status(200).json({
-          user: filteredObj,
-        });
-        return;
-      } catch (e) {
-        console.log(e);
-        res.status(500).json({
-          error: "An internal error occured while updating the user.",
+      const updatedUser = await userRepository.editById(Number(id), updateBody);
+      if (isErr(updatedUser)) {
+        res.status(400).json({
+          error: updatedUser.error,
         });
         return;
       }
+      const filteredObj: UserDto = updatedUser;
+      res.status(200).json({
+        user: filteredObj,
+      });
+      return;
     });
   },
 };

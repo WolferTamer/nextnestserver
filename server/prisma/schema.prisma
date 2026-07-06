@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model city {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(255)
+  state      String    @db.VarChar(255)
+  statecode  String    @db.VarChar(255)
+  density    Float     @db.Float
+  growth     Float     @db.Float
+  population Int
+  lat        Float     @db.Float
+  lon        Float     @db.Float
+  createdAt  DateTime  @default(now()) @db.DateTime(0)
+  updatedAt  DateTime  @default(now()) @db.DateTime(0)
+  tax        tax[]
+  weather    weather[]
+
+  @@unique([name, state], map: "city_name_state")
+}
+
+model incometax {
+  id        Int      @id @default(autoincrement())
+  state     String   @db.VarChar(255)
+  bracket   Int?
+  rate      Float    @db.Float
+  married   Boolean
+  createdAt DateTime @default(now()) @db.DateTime(0)
+  updatedAt DateTime @default(now()) @db.DateTime(0)
+}
+
+model tax {
+  id                       Int      @id @default(autoincrement())
+  salestax                 Float?   @db.Float
+  propertytaxquarter       Float?   @db.Float
+  propertytaxthreequarters Float?   @db.Float
+  createdAt                DateTime @default(now()) @db.DateTime(0)
+  updatedAt                DateTime @default(now()) @db.DateTime(0)
+  cityId                   Int
+  localtaxes               Boolean?
+  singlestandarddeduction  Int?
+  marriedstandarddeduction Int?
+  city                     city     @relation(fields: [cityId], references: [id], onDelete: Cascade, map: "tax_ibfk_1")
+
+  @@index([cityId], map: "cityId")
+}
+
+model user {
+  userid    Int      @id @default(autoincrement())
+  email     String   @unique(map: "email") @db.VarChar(255)
+  password  String   @db.VarChar(255)
+  username  String   @db.VarChar(255)
+  salary    Int?
+  createdAt DateTime @default(now()) @db.DateTime(0)
+  updatedAt DateTime @default(now()) @db.DateTime(0)
+}
+
+model weather {
+  id                Int      @id @default(autoincrement())
+  jantemp           Float?   @db.Float
+  janhumidity       Float?   @db.Float
+  janprecipitation  Float?   @db.Float
+  janwind           Float?   @db.Float
+  janclouds         Float?   @db.Float
+  julytemp          Float?   @db.Float
+  julyhumidity      Float?   @db.Float
+  julyprecipitation Float?   @db.Float
+  julyclouds        Float?   @db.Float
+  julywind          Float?   @db.Float
+  createdAt         DateTime @default(now()) @db.DateTime(0)
+  updatedAt         DateTime @default(now()) @db.DateTime(0)
+  cityId            Int
+  city              city     @relation(fields: [cityId], references: [id], onDelete: Cascade, map: "weather_ibfk_1")
+
+  @@index([cityId], map: "cityId")
+}
