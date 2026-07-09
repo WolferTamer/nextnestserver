@@ -1,6 +1,10 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/wasm-compiler-edge";
 import { prisma } from "../lib/prisma";
-import { ERR, isErrorWithMessage } from "../utils/errorGuards";
+import {
+  ERR,
+  isErrorWithMessage,
+  parsePrismaError,
+} from "../utils/errorGuards";
 import { WeatherRepository } from "./repoTypes";
 
 export const weatherRepository: WeatherRepository = {
@@ -11,16 +15,7 @@ export const weatherRepository: WeatherRepository = {
       });
       return weather;
     } catch (e) {
-      if (isErrorWithMessage(e)) {
-        return {
-          [ERR]: true,
-          error: e.message,
-        };
-      }
-      return {
-        [ERR]: true,
-        error: "Unknown error occured.",
-      };
+      return parsePrismaError(e);
     }
   },
   async editByCityId(cityId, data) {
@@ -31,24 +26,7 @@ export const weatherRepository: WeatherRepository = {
       });
       return weather;
     } catch (e) {
-      let error = "";
-      if (e instanceof PrismaClientKnownRequestError) {
-        if (e.code === "P2001") {
-          error = "Weather does not exist for this city.";
-        } else if (e.code === "P2002") {
-          error = "That city already has weather.";
-        } else {
-          error = e.message;
-        }
-      } else if (isErrorWithMessage(e)) {
-        error = e.message;
-      } else {
-        error = "An unknown error occured";
-      }
-      return {
-        [ERR]: true,
-        error: error,
-      };
+      return parsePrismaError(e);
     }
   },
   async upsertByCityId(cityId, create, update) {
@@ -60,24 +38,7 @@ export const weatherRepository: WeatherRepository = {
       });
       return weather;
     } catch (e) {
-      let error = "";
-      if (e instanceof PrismaClientKnownRequestError) {
-        if (e.code === "P2001") {
-          error = "Weather does not exist for this city.";
-        } else if (e.code === "P2002") {
-          error = "That city already has weather.";
-        } else {
-          error = e.message;
-        }
-      } else if (isErrorWithMessage(e)) {
-        error = e.message;
-      } else {
-        error = "An unknown error occured";
-      }
-      return {
-        [ERR]: true,
-        error: error,
-      };
+      return parsePrismaError(e);
     }
   },
 };

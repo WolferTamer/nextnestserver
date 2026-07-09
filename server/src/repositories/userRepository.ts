@@ -1,6 +1,10 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { prisma } from "../lib/prisma";
-import { ERR, isErrorWithMessage } from "../utils/errorGuards";
+import {
+  ERR,
+  isErrorWithMessage,
+  parsePrismaError,
+} from "../utils/errorGuards";
 import { UserRepository } from "./repoTypes";
 
 export const userRepository: UserRepository = {
@@ -13,16 +17,7 @@ export const userRepository: UserRepository = {
       });
       return user;
     } catch (e) {
-      let error: string = "";
-      if (isErrorWithMessage(e)) {
-        error = e.message;
-      } else {
-        error = "An unknown error occured";
-      }
-      return {
-        [ERR]: true,
-        error: error,
-      };
+      return parsePrismaError(e);
     }
   },
   async findByIdIncludePassword(id) {
@@ -47,16 +42,7 @@ export const userRepository: UserRepository = {
 
       return null;
     } catch (e) {
-      let error: string = "";
-      if (isErrorWithMessage(e)) {
-        error = e.message;
-      } else {
-        error = "An unknown error occured";
-      }
-      return {
-        [ERR]: true,
-        error: error,
-      };
+      return parsePrismaError(e);
     }
   },
   async create(data) {
@@ -64,24 +50,7 @@ export const userRepository: UserRepository = {
       const newUser = await prisma.user.create({ data: data });
       return newUser;
     } catch (e) {
-      let error: string = "";
-      if (e instanceof PrismaClientKnownRequestError) {
-        if (e.code === "P2001") {
-          error = "That user doesn't exist";
-        } else if (e.code === "P2002") {
-          error = "That email is already in use";
-        } else {
-          error = e.message;
-        }
-      } else if (isErrorWithMessage(e)) {
-        error = e.message;
-      } else {
-        error = "An unknown error occured";
-      }
-      return {
-        [ERR]: true,
-        error: error,
-      };
+      return parsePrismaError(e);
     }
   },
   async getAll() {
@@ -89,16 +58,7 @@ export const userRepository: UserRepository = {
       const users = await prisma.user.findMany();
       return users;
     } catch (e) {
-      let error: string = "";
-      if (isErrorWithMessage(e)) {
-        error = e.message;
-      } else {
-        error = "An unknown error occured";
-      }
-      return {
-        [ERR]: true,
-        error: error,
-      };
+      return parsePrismaError(e);
     }
   },
   async editById(id, data) {
@@ -135,24 +95,7 @@ export const userRepository: UserRepository = {
         where: { userid: id },
       });
     } catch (e) {
-      let error = "";
-      if (e instanceof PrismaClientKnownRequestError) {
-        if (e.code === "P2001") {
-          error = "That user doesn't exist";
-        } else if (e.code === "P2002") {
-          error = "That email is already in use";
-        } else {
-          error = e.message;
-        }
-      } else if (isErrorWithMessage(e)) {
-        error = e.message;
-      } else {
-        error = "An unknown error occured";
-      }
-      return {
-        [ERR]: true,
-        error: error,
-      };
+      return parsePrismaError(e);
     }
   },
 };

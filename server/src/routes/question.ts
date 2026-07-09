@@ -19,7 +19,7 @@ export const get = {
     }
     jwt.verify(token, process.env.SECRETKEY!, (err, user) => {
       if (err) return res.sendStatus(403);
-      req.user = user;
+      //req.user = user;
 
       res.status(200).json({
         questions: questions,

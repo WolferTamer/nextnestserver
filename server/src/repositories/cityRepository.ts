@@ -1,29 +1,30 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { prisma } from "../lib/prisma";
-import { ERR, isErrorWithMessage } from "../utils/errorGuards";
+import {
+  Err,
+  ERR,
+  isErrorWithMessage,
+  parsePrismaError,
+} from "../utils/errorGuards";
 import { CityRepository } from "./repoTypes";
 import { City, User } from "../types";
+import { cityGetPayload, cityInclude } from "../generated/prisma/models";
 
 export const cityRepository: CityRepository = {
-  async findById(id) {
+  async findById<T extends cityInclude = {}>(
+    id: number,
+    include?: T,
+  ): Promise<cityGetPayload<{ include: T }> | null | Err> {
     try {
       const city = await prisma.city.findUnique({
         where: {
           id: id,
         },
+        include,
       });
-      return city;
+      return city as cityGetPayload<{ include: T }> | null;
     } catch (e) {
-      let error: string = "";
-      if (isErrorWithMessage(e)) {
-        error = e.message;
-      } else {
-        error = "An unknown error occured";
-      }
-      return {
-        [ERR]: true,
-        error: error,
-      };
+      return parsePrismaError(e);
     }
   },
   async findByLike(query) {
@@ -32,16 +33,7 @@ export const cityRepository: CityRepository = {
         SELECT * from "city" WHERE "name" LIKE '${query}' LIMIT 10;`;
       return cities;
     } catch (e) {
-      let error: string = "";
-      if (isErrorWithMessage(e)) {
-        error = e.message;
-      } else {
-        error = "An unknown error occured";
-      }
-      return {
-        [ERR]: true,
-        error: error,
-      };
+      return parsePrismaError(e);
     }
   },
   async create(data) {
@@ -49,39 +41,17 @@ export const cityRepository: CityRepository = {
       const newCity = await prisma.city.create({ data: data });
       return newCity;
     } catch (e) {
-      let error: string = "";
-      if (e instanceof PrismaClientKnownRequestError) {
-        if (e.code === "P2002") {
-          error = "That city already has";
-        } else {
-          error = e.message;
-        }
-      } else if (isErrorWithMessage(e)) {
-        error = e.message;
-      } else {
-        error = "An unknown error occured";
-      }
-      return {
-        [ERR]: true,
-        error: error,
-      };
+      return parsePrismaError(e);
     }
   },
-  async getAll() {
+  async getAll<T extends cityInclude = {}>(
+    include?: T,
+  ): Promise<cityGetPayload<{ include: T }>[] | Err> {
     try {
-      const city = await prisma.city.findMany();
-      return city;
+      const city = await prisma.city.findMany({ include });
+      return city as cityGetPayload<{ include: T }>[];
     } catch (e) {
-      let error: string = "";
-      if (isErrorWithMessage(e)) {
-        error = e.message;
-      } else {
-        error = "An unknown error occured";
-      }
-      return {
-        [ERR]: true,
-        error: error,
-      };
+      return parsePrismaError(e);
     }
   },
   async upsertById(id, create, update) {
@@ -93,24 +63,7 @@ export const cityRepository: CityRepository = {
       });
       return updatedCity;
     } catch (e) {
-      let error = "";
-      if (e instanceof PrismaClientKnownRequestError) {
-        if (e.code === "P2001") {
-          error = "That city doesn't exist";
-        } else if (e.code === "P2002") {
-          error = "That city is already in use";
-        } else {
-          error = e.message;
-        }
-      } else if (isErrorWithMessage(e)) {
-        error = e.message;
-      } else {
-        error = "An unknown error occured";
-      }
-      return {
-        [ERR]: true,
-        error: error,
-      };
+      return parsePrismaError(e);
     }
   },
   async upsertMany(data) {
@@ -128,22 +81,7 @@ export const cityRepository: CityRepository = {
       const res = await Promise.all(promises);
       return res;
     } catch (e) {
-      let error = "";
-      if (e instanceof PrismaClientKnownRequestError) {
-        if (e.code === "P2001") {
-          error = "That cityy doesn't exist";
-        } else {
-          error = e.message;
-        }
-      } else if (isErrorWithMessage(e)) {
-        error = e.message;
-      } else {
-        error = "An unknown error occured";
-      }
-      return {
-        [ERR]: true,
-        error: error,
-      };
+      return parsePrismaError(e);
     }
   },
   async deleteById(id) {
@@ -152,22 +90,7 @@ export const cityRepository: CityRepository = {
         where: { id: id },
       });
     } catch (e) {
-      let error = "";
-      if (e instanceof PrismaClientKnownRequestError) {
-        if (e.code === "P2001") {
-          error = "That cityy doesn't exist";
-        } else {
-          error = e.message;
-        }
-      } else if (isErrorWithMessage(e)) {
-        error = e.message;
-      } else {
-        error = "An unknown error occured";
-      }
-      return {
-        [ERR]: true,
-        error: error,
-      };
+      return parsePrismaError(e);
     }
   },
 };

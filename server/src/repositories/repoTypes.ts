@@ -1,12 +1,24 @@
 import {
   cityCreateInput,
+  cityGetPayload,
+  cityInclude,
   cityUpdateInput,
+  incometaxCreateInput,
+  taxCreateInput,
+  taxUpdateInput,
   userCreateInput,
   userUpdateInput,
   weatherCreateInput,
   weatherUpdateInput,
 } from "../generated/prisma/models";
-import { City, User, UserWithPassword, Weather } from "../types";
+import {
+  City,
+  IncomeTax,
+  Tax,
+  User,
+  UserWithPassword,
+  Weather,
+} from "../types";
 import { Err } from "../utils/errorGuards";
 
 export interface UserRepository {
@@ -32,9 +44,14 @@ export interface WeatherRepository {
 }
 
 export interface CityRepository {
-  findById(id: number): Promise<City | null | Err>;
+  findById<T extends cityInclude = {}>(
+    id: number,
+    include?: T,
+  ): Promise<cityGetPayload<{ include: T }> | null | Err>;
   findByLike(query: string): Promise<City[] | Err>;
-  getAll(): Promise<City[] | Err>;
+  getAll<T extends cityInclude = {}>(
+    include?: T,
+  ): Promise<cityGetPayload<{ include: T }>[] | Err>;
   create(data: cityCreateInput): Promise<City | Err>;
   upsertMany(
     data: { id: number; create: cityCreateInput; update: cityUpdateInput }[],
@@ -45,4 +62,23 @@ export interface CityRepository {
     update: cityUpdateInput,
   ): Promise<City | Err>;
   deleteById(id: number): Promise<void | Err>;
+}
+
+export interface TaxRepositoty {
+  findByCityId(cityid: number): Promise<Tax | null | Err>;
+  getAll(): Promise<Tax[] | Err>;
+  create(data: taxCreateInput): Promise<Tax | Err>;
+  upsertByCityId(
+    cityid: number,
+    create: taxCreateInput,
+    update: taxUpdateInput,
+  ): Promise<Tax | Err>;
+}
+
+export interface IncomeTaxRepository {
+  getAll(): Promise<IncomeTax[] | Err>;
+  findByState(state: string): Promise<IncomeTax[] | Err>;
+  replace(state: string, taxes: incometaxCreateInput[]): Promise<number | Err>;
+  bulkReset(newTaxes: incometaxCreateInput[]): Promise<number | Err>;
+  findByStateLt(state: string, income: number): Promise<IncomeTax[] | Err>;
 }
