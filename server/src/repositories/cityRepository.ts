@@ -20,7 +20,6 @@ export const cityRepository: CityRepository = {
         where: {
           id: id,
         },
-        include,
       });
       return city as cityGetPayload<{ include: T }> | null;
     } catch (e) {

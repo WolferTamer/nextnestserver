@@ -1,5 +1,4 @@
 //CURRENTLY PSUEDOCODE
-import { sequelize } from "../db";
 import fs from "fs";
 import { parse } from "csv-parse";
 import { cityRepository } from "../repositories/cityRepository";

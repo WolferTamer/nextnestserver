@@ -21,10 +21,20 @@ export const incomeTaxRepository: IncomeTaxRepository = {
       return parsePrismaError(e);
     }
   },
-  async findByStateLt(state: string, income: number) {
+  async findByLt(income, married = true) {
     try {
       const taxes = await prisma.incometax.findMany({
-        where: { state: state, bracket: { lte: income } },
+        where: { bracket: { lte: income }, married },
+      });
+      return taxes;
+    } catch (e) {
+      return parsePrismaError(e);
+    }
+  },
+  async findByStateLt(state: string, income: number, married = true) {
+    try {
+      const taxes = await prisma.incometax.findMany({
+        where: { state: state, bracket: { lte: income }, married: married },
       });
       return taxes;
     } catch (e) {

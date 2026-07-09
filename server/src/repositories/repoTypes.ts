@@ -31,6 +31,7 @@ export interface UserRepository {
 }
 
 export interface WeatherRepository {
+  getAll(): Promise<Weather[] | null | Err>;
   findByCityId(cityId: number): Promise<Weather | null | Err>;
   editByCityId(
     cityId: number,
@@ -77,8 +78,13 @@ export interface TaxRepositoty {
 
 export interface IncomeTaxRepository {
   getAll(): Promise<IncomeTax[] | Err>;
+  findByLt(income: number, married?: boolean): Promise<IncomeTax[] | Err>;
   findByState(state: string): Promise<IncomeTax[] | Err>;
   replace(state: string, taxes: incometaxCreateInput[]): Promise<number | Err>;
   bulkReset(newTaxes: incometaxCreateInput[]): Promise<number | Err>;
-  findByStateLt(state: string, income: number): Promise<IncomeTax[] | Err>;
+  findByStateLt(
+    state: string,
+    income: number,
+    married?: boolean,
+  ): Promise<IncomeTax[] | Err>;
 }

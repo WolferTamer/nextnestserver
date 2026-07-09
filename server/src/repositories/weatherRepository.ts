@@ -8,6 +8,14 @@ import {
 import { WeatherRepository } from "./repoTypes";
 
 export const weatherRepository: WeatherRepository = {
+  async getAll() {
+    try {
+      const weather = await prisma.weather.findMany();
+      return weather;
+    } catch (e) {
+      return parsePrismaError(e);
+    }
+  },
   async findByCityId(cityId) {
     try {
       const weather = await prisma.weather.findFirst({

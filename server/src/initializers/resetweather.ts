@@ -1,7 +1,4 @@
-import {
-  weatherCreateInput,
-  weatherUpdateInput,
-} from "../generated/prisma/models";
+import { weatherCreateInput } from "../generated/prisma/models";
 import { cityRepository } from "../repositories/cityRepository";
 import { weatherRepository } from "../repositories/weatherRepository";
 import { isErr } from "../utils/errorGuards";
@@ -13,7 +10,7 @@ function sleep(ms: number) {
   });
 }
 
-module.exports = async () => {
+export default async () => {
   console.log("Starting Weather Reset");
   const cities = await cityRepository.getAll();
 

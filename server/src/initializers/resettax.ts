@@ -1,4 +1,3 @@
-import { sequelize } from "../db";
 import { taxCreateInput } from "../generated/prisma/models";
 import { cityRepository } from "../repositories/cityRepository";
 import { taxRepository } from "../repositories/taxRepository";
@@ -11,7 +10,7 @@ function sleep(ms: number) {
   });
 }
 
-module.exports = async () => {
+export default async () => {
   //Empty the tax table before starting
   const cities = await cityRepository.getAll();
   if (isErr(cities)) throw Error("Unable to load cities");
