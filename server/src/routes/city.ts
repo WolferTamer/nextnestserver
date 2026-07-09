@@ -3,9 +3,10 @@
 //that each route has its own.
 
 import { Request, Response } from "express";
-
-const { sequelize } = require("../db");
-const Sequelize = require("sequelize");
+import { City } from "../types";
+import { userRepository } from "../repositories/userRepository";
+import { isErr } from "../utils/errorGuards";
+import { cityRepository } from "../repositories/cityRepository";
 
 //PARAMS: id (optional, the id number of the city), name (option, the name, or partial name, of the city)
 //RESULTS: No params results in a list of all cities.
@@ -15,25 +16,20 @@ const Sequelize = require("sequelize");
 export const get = {
   route: "/api/city",
   execute: async (req: Request, res: Response) => {
-    const city = sequelize.models.city;
-    let cities;
+    let cities: City[];
 
     if (req.query.id) {
-      cities = await city.findAll({
-        where: {
-          id: req.query.id,
-        },
-      });
+      const r = await cityRepository.findById(Number(req.query.id));
+      if (isErr(r) || !r) cities = [];
+      else cities = [r];
     } else if (req.query.name) {
-      cities = await city.findAll({
-        where: {
-          name: {
-            [Sequelize.Op.like]: `%${req.query.name}%`,
-          },
-        },
-      });
+      const r = await cityRepository.findByLike(`%${req.query.name}%`);
+      if (isErr(r)) cities = [];
+      else cities = r;
     } else {
-      cities = await city.findAll();
+      const r = await cityRepository.getAll();
+      if (isErr(r)) cities = [];
+      else cities = r;
     }
 
     if (cities.length < 1) {

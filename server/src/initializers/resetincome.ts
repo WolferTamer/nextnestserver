@@ -1,8 +1,14 @@
 //CURRENTLY PSUEDOCODE
-import { sequelize } from "../db";
-import Sequelize from "sequelize";
 import fs from "fs";
 import { parse } from "csv-parse";
+import { cityRepository } from "../repositories/cityRepository";
+import { isErr } from "../utils/errorGuards";
+import {
+  incometaxCreateInput,
+  taxCreateInput,
+} from "../generated/prisma/models";
+import { taxRepository } from "../repositories/taxRepository";
+import { incomeTaxRepository } from "../repositories/incometaxRepository";
 //Columns in used CSV:
 // 0: State
 // 1: Single Filer Rates
@@ -20,18 +26,7 @@ function sleep(ms: number) {
 }
 
 export default async () => {
-  let incometaxes: {
-    state: string;
-    bracket: number;
-    rate: number;
-    married: boolean;
-  }[] = [];
-  const city = sequelize.models.city;
-  const incometax = sequelize.models.incometax;
-  const tax = sequelize.models.tax;
-  await incometax.destroy({
-    truncate: true,
-  });
+  let incometaxes: incometaxCreateInput[] = [];
   fs.createReadStream("./income-tax.csv")
     .pipe(parse({ delimiter: ",", from_line: 2 }))
     .on("data", async function (row) {
@@ -45,19 +40,20 @@ export default async () => {
         let standardsingle = parseFloat(row[7].replace(/[^0-9.]/g, ""));
         let standardmarried = parseFloat(row[8].replace(/[^0-9.]/g, ""));
         let localincome = row[12] === "true";
-        let cities = await city.findAll({
-          where: {
-            state: state,
-          },
-          include: [{ model: tax }],
-        });
+        let cities = await cityRepository.getAll({ tax: true });
+        if (isErr(cities)) {
+          throw Error("Could not get cities.");
+        }
         for (let object of cities) {
-          if (!object.tax) {
+          if (object.tax.length < 1) {
             continue;
           }
-          let taxobject = {};
+          const taxInfo = object.tax[0];
+          let taxobject: taxCreateInput = {
+            city: { connect: { id: object.id } },
+          };
           let shouldadd = false;
-          if (localincome != object.tax.localtaxes) {
+          if (localincome != taxInfo.localtaxes) {
             taxobject.localtaxes = localincome;
             shouldadd = true;
           }
@@ -73,7 +69,7 @@ export default async () => {
             console.log(
               `Object ${object.id} is being updated with ${localincome} ${standardsingle} ${standardmarried}`,
             );
-            tax.update(taxobject, { where: { id: object.id } });
+            await taxRepository.upsertByCityId(object.id, taxobject, taxobject);
             await sleep(20);
           }
         }
@@ -105,6 +101,6 @@ export default async () => {
       }
     })
     .on("end", () => {
-      incometax.bulkCreate(incometaxes);
+      incomeTaxRepository.bulkReset(incometaxes);
     });
 };

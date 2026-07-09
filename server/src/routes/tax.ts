@@ -1,30 +1,22 @@
 import { Request, Response } from "express";
-import { sequelize } from "../db";
-import { Op } from "sequelize";
+import { Tax } from "../types";
+import { taxRepository } from "../repositories/taxRepository";
+import { isErr } from "../utils/errorGuards";
 
 //TODO: Add params and results that correspond to city IDs and name/states
 export const get = {
   route: "/api/tax",
   execute: async (req: Request, res: Response) => {
-    const tax = sequelize.models.tax;
-    let taxes;
+    let taxes: Tax[];
 
     if (req.query.id) {
-      taxes = await tax.findAll({
-        where: {
-          cityId: req.query.id,
-        },
-      });
-    } else if (req.query.name) {
-      taxes = await tax.findAll({
-        where: {
-          name: {
-            [Op.like]: `%${req.query.name}%`,
-          },
-        },
-      });
+      const temp = await taxRepository.findByCityId(Number(req.query.id));
+      if (isErr(temp) || !temp) taxes = [];
+      else taxes = [temp];
     } else {
-      taxes = await tax.findAll();
+      const temp = await taxRepository.getAll();
+      if (isErr(temp)) taxes = [];
+      else taxes = temp;
     }
 
     if (taxes.length < 1) {

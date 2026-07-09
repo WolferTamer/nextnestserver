@@ -1,5 +1,7 @@
-import { sequelize } from "../db";
-import Sequelize from "sequelize";
+import { taxCreateInput } from "../generated/prisma/models";
+import { cityRepository } from "../repositories/cityRepository";
+import { taxRepository } from "../repositories/taxRepository";
+import { isErr } from "../utils/errorGuards";
 import getStateCode from "../utils/getStateCode";
 //Sleep function is used for delay between API calls. If there is no delay, API Ninja will return only errors for most API calls.
 function sleep(ms: number) {
@@ -8,15 +10,10 @@ function sleep(ms: number) {
   });
 }
 
-module.exports = async () => {
-  const city = sequelize.models.city;
-  const cities = await city.findAll();
-  const tax = sequelize.models.tax;
+export default async () => {
   //Empty the tax table before starting
-  await tax.destroy({
-    truncate: true,
-  });
-
+  const cities = await cityRepository.getAll();
+  if (isErr(cities)) throw Error("Unable to load cities");
   const myHeaders = new Headers();
   myHeaders.append("X-Api-Key", process.env.APININJAKEY!);
 
@@ -67,14 +64,13 @@ module.exports = async () => {
             }
             count++;
             if (sales || avg25 || avg75) {
-              const data = {
+              const data: taxCreateInput = {
                 salestax: sales,
                 propertytaxquarter: avg25,
                 propertytaxthreequarters: avg75,
-                cityId: city.id,
+                city: { connect: city },
               };
-              await tax.upsert(data);
-              console.log;
+              await taxRepository.upsertByCityId(city.id, data, data);
             } else {
               console.error(`No Tax Info on ${city.name}`);
             }

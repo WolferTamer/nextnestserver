@@ -1,7 +1,7 @@
 import { parse } from "csv-parse";
-import { sequelize } from "../db";
 import fs from "fs";
-import Sequelize from "sequelize";
+import { cityRepository } from "../repositories/cityRepository";
+import { cityCreateInput } from "../generated/prisma/models";
 
 function sleep(ms: number) {
   return new Promise((resolve) => {
@@ -37,7 +37,7 @@ export default async (callback?: () => any) => {
           let lat = result[0] ? result[0].lat : 0;
           let lon = result[0] ? result[0].lon : 0;
           //Check if the the city already exists in the DB. If it does, update it. Otherewise, insert a new city
-          let data = {
+          let data: cityCreateInput = {
             name: row[1],
             population: row[0],
             state: row[2],
@@ -47,7 +47,7 @@ export default async (callback?: () => any) => {
             lat: lat,
             lon: lon,
           };
-          await sequelize.models.city.upsert(data);
+          await cityRepository.upsertById(count, data, data);
           count++;
           if (count >= maxcount) {
             if (callback) {

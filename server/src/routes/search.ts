@@ -2,57 +2,70 @@
 //You can technically have different routes within each file, but this will be structured so
 //that each route has its own.
 
-import { sequelize } from "../db";
-import Sequelize from "sequelize";
+import { Request, Response } from "express";
+import {
+  cityInclude,
+  cityWhereInput,
+  taxSelect,
+  taxWhereInput,
+  weatherSelect,
+  weatherWhereInput,
+} from "../generated/prisma/models";
+import { incomeTaxRepository } from "../repositories/incometaxRepository";
+import { isErr } from "../utils/errorGuards";
+import { IncomeTax } from "../types";
 
-const convertWeather = (options) => {
-  let weather = { model: sequelize.models.weather, attributes: [], where: {} };
+const convertWeather = (options: number) => {
+  let weather: {
+    select: weatherSelect;
+    where: weatherWhereInput;
+  } = { select: {}, where: {} };
   let summer = options % 4;
   if (summer > 0) {
     //Considered cold if less than 15 degrees celcius, hot if above 27 degrees celcius
-    weather.attributes.push("julytemp");
+    weather.select.julytemp = true;
     weather.where["julytemp"] =
       summer == 1
-        ? { [Sequelize.Op.lt]: 292 }
+        ? { lt: 292 }
         : summer == 3
-          ? { [Sequelize.Op.gt]: 300 }
-          : { [Sequelize.Op.lt]: 300, [Sequelize.Op.gt]: 292 };
+          ? { gt: 300 }
+          : { lt: 300, gt: 292 };
   }
   options = Math.floor(options / 4);
   const winter = options % 4;
   if (winter > 0) {
     //Considered cold if less than -1 degrees celcius, warm if above 11 degrees celcius
-    weather.attributes.push("jantemp");
+    weather.select.jantemp = true;
     weather.where["jantemp"] =
       winter == 1
-        ? { [Sequelize.Op.lt]: 272 }
+        ? { lt: 272 }
         : winter == 3
-          ? { [Sequelize.Op.gt]: 284 }
-          : { [Sequelize.Op.lt]: 284, [Sequelize.Op.gt]: 272 };
+          ? { gt: 284 }
+          : { lt: 284, gt: 272 };
   }
   options = Math.floor(options / 4);
   const rain = options % 4;
   if (rain > 0) {
     //Considered little if less than 0.05m of precipitation , lots if above 0.09
-    weather.attributes.push("julyprecipitation");
+    weather.select.julyprecipitation = true;
     weather.where["julyprecipitation"] =
       rain == 1
-        ? { [Sequelize.Op.lt]: 0.5 }
+        ? { lt: 0.5 }
         : rain == 3
-          ? { [Sequelize.Op.gt]: 0.09 }
-          : { [Sequelize.Op.lt]: 0.09, [Sequelize.Op.gt]: 0.05 };
+          ? { gt: 0.09 }
+          : { lt: 0.09, gt: 0.05 };
   }
   options = Math.floor(options / 4);
   const humidity = options % 4;
   if (humidity > 0) {
     //Considered little if less than 70% humidity, lots if above 80
-    weather.attributes.push("julyhumidity");
+    weather.select.julyhumidity = true;
     weather.where["julyhumidity"] =
       humidity == 1
-        ? { [Sequelize.Op.lt]: 70 }
+        ? { lt: 70 }
         : humidity == 3
-          ? { [Sequelize.Op.gt]: 80 }
-          : { [Sequelize.Op.lt]: 80, [Sequelize.Op.gt]: 70 };
+          ? { gt: 80 }
+          : { lt: 80, gt: 70 };
   }
   return weather;
 };
@@ -61,19 +74,20 @@ const convertWeather = (options) => {
 //RESULTS: All cities that contain the name string and match weather preferences
 export const get = {
   route: "/api/search",
-  execute: async (req, res) => {
-    const city = sequelize.models.city;
-    let query = { include: [] };
+  execute: async (req: Request, res: Response) => {
+    let query: { include: cityInclude; where?: cityWhereInput } = {
+      include: {},
+    };
 
     const name = req.query.name;
     const weatherbinary = req.query.weather;
-    const salestax = parseFloat(req.query.salestax);
+    const salestax = parseFloat(req.query.salestax as string);
     const allowlocal =
       typeof req.query.localtax === "string"
         ? !(req.query.localtax.toLowerCase() === "false")
         : true;
-    const salary = parseInt(req.query.salary);
-    const maxincome = parseFloat(req.query.maxincome);
+    const salary = parseInt(req.query.salary as string);
+    const maxincome = parseFloat(req.query.maxincome as string);
     const married =
       typeof req.query.married === "string"
         ? req.query.married.toLowerCase() === "true"
@@ -103,12 +117,12 @@ export const get = {
       }
       query.where = {
         name: {
-          [Sequelize.Op.like]: `%${req.query.name}%`,
+          contains: `%${req.query.name}%`,
         },
       };
     }
     if (weatherbinary) {
-      if (isNaN(weatherbinary)) {
+      if (isNaN(Number(weatherbinary))) {
         res.status(400).json({
           error: "Weather must be a number of value 1-255",
         });
@@ -120,13 +134,15 @@ export const get = {
       // Rain Preference (Bits 5 & 6): 0 - No Preference, 1 - Little Rain, 2 - Moderate Rain, 3 - Lots of Rain
       // Humidity (Bits 7 & 8): 0 - No Preference, 1 - Not Humid, 2 - Average, 3 - Very Humid
       // Using this system instead of individual params will save on communicaiton time
-      query.include.push(convertWeather(weatherbinary));
+      query.include.weather = convertWeather(Number(weatherbinary));
     }
 
-    if (salestax || allowlocal !== "undefined") {
-      let taxQuery = {
-        model: sequelize.models.tax,
-        attributes: [],
+    if (salestax || typeof allowlocal !== "undefined") {
+      let taxQuery: {
+        select: taxSelect;
+        where: taxWhereInput;
+      } = {
+        select: {},
         where: {},
       };
       if (salestax) {
@@ -136,8 +152,8 @@ export const get = {
           });
           return;
         } else {
-          taxQuery.attributes.push("salestax");
-          taxQuery.where["salestax"] = { [Sequelize.Op.lt]: salestax };
+          taxQuery.select.salestax = true;
+          taxQuery.where["salestax"] = { lt: salestax };
         }
       }
 
@@ -148,18 +164,16 @@ export const get = {
           });
           return;
         } else if (!allowlocal) {
-          taxQuery.attributes.push("localtaxes");
-          taxQuery.where[Sequelize.Op.or] = [
-            { localtaxes: { [Sequelize.Op.eq]: null } },
-            { localtaxes: { [Sequelize.Op.eq]: false } },
+          taxQuery.select.localtaxes = true;
+          taxQuery.where.OR = [
+            { localtaxes: { equals: null } },
+            { localtaxes: { equals: false } },
           ];
         }
       }
-      if (taxQuery.attributes.length > 0) {
-        query.include.push(taxQuery);
-      }
+      query.include.tax = taxQuery;
     }
-    let income = {};
+    let income: { [key: string]: IncomeTax } = {};
     if (maxincome && typeof salary !== "undefined") {
       if (typeof maxincome !== "number" && typeof salary !== "number") {
         res.status(400).json({
@@ -170,21 +184,13 @@ export const get = {
         //Find Income tax of same state, highest income tax without being greater than salary,
         //and the rate is lower than maxincome while matching married/unmarried. Include if there
         //is no income for the state.
-        let it = await sequelize.models.incometax.findAll({
-          model: sequelize.models.tax,
-          attributes: ["state", "bracket", "rate", "married"],
-          where: {
-            bracket: { [Sequelize.Op.lte]: salary },
-            married: married,
-          },
-        });
-
-        for (let state of it) {
-          let obj = state.dataValues;
-          const key = obj.state;
-          if (!income[key] || income[key].bracket < obj.bracket) {
-            delete obj.state;
-            income[key] = obj;
+        let it = await incomeTaxRepository.findByLt(maxincome, married);
+        if (!isErr(it)) {
+          for (let state of it) {
+            const key = state.state;
+            if (!income[key] || income[key]!.bracket! < state.bracket!) {
+              income[key] = state;
+            }
           }
         }
       }

@@ -5,7 +5,7 @@ import resetcity from "./resetcity.js";
 import resettax from "./resettax.js";
 import resetweather from "./resetweather.js";
 import resetincome from "./resetincome.js";
-module.exports = async (args: string[]) => {
+export default async (args: string[]) => {
   //The first row is ignored.
 
   if (args.includes("init")) {

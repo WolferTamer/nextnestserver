@@ -1,6 +1,8 @@
-import { sequelize } from "../db";
-import Sequelize from "sequelize";
-import getStateCode from "../utils/getStateCode";
+import { weatherCreateInput } from "../generated/prisma/models";
+import { cityRepository } from "../repositories/cityRepository";
+import { weatherRepository } from "../repositories/weatherRepository";
+import { isErr } from "../utils/errorGuards";
+
 //Sleep function is used for delay between API calls. If there is no delay, API Ninja will return only errors for most API calls.
 function sleep(ms: number) {
   return new Promise((resolve) => {
@@ -8,17 +10,15 @@ function sleep(ms: number) {
   });
 }
 
-module.exports = async () => {
+export default async () => {
   console.log("Starting Weather Reset");
-  const city = sequelize.models.city;
-  const cities = await city.findAll();
+  const cities = await cityRepository.getAll();
+
+  if (isErr(cities)) {
+    throw Error("Unable to find cities" + cities.error);
+  }
 
   //Empty the weather table before starting
-
-  const weather = sequelize.models.weather;
-  await weather.destroy({
-    truncate: true,
-  });
 
   const myHeaders = new Headers();
 
@@ -41,7 +41,7 @@ module.exports = async () => {
     fetch(url, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        let data = {
+        let data: weatherCreateInput = {
           jantemp: 0,
           janhumidity: 0,
           janwind: 0,
@@ -52,6 +52,7 @@ module.exports = async () => {
           julywind: 0,
           julyprecipitation: 0,
           julyclouds: 0,
+          city: { connect: { id: city.id } },
         };
         if (result.result) {
           data.jantemp = result.result.temp.median;
@@ -76,9 +77,8 @@ module.exports = async () => {
               data.julyprecipitation = result.result.precipitation.mean;
               data.julyclouds = result.result.clouds.median;
             }
-            data.cityId = city.id;
 
-            await weather.upsert(data);
+            await weatherRepository.upsertByCityId(city.id, data, data);
 
             if (count >= cities.length) {
               console.log("Finished loading Weather information");
