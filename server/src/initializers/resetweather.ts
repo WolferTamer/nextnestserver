@@ -41,6 +41,7 @@ export default async () => {
     fetch(url, requestOptions)
       .then((response) => response.json())
       .then((result) => {
+        console.log(result);
         let data: weatherCreateInput = {
           jantemp: 0,
           janhumidity: 0,

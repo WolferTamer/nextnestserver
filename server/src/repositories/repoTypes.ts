@@ -50,6 +50,10 @@ export interface CityRepository {
     include?: T,
   ): Promise<cityGetPayload<{ include: T }> | null | Err>;
   findByLike(query: string): Promise<City[] | Err>;
+  findByState<T extends cityInclude = {}>(
+    state: string,
+    include: T,
+  ): Promise<cityGetPayload<{ include: T }>[] | null | Err>;
   getAll<T extends cityInclude = {}>(
     include?: T,
   ): Promise<cityGetPayload<{ include: T }>[] | Err>;

@@ -30,15 +30,19 @@ export default async () => {
     await sleep(50);
     const city = cities[i];
     console.log(city.name);
+    console.log(
+      `https://api.api-ninjas.com/v1/propertytax?city=${city.name}&state=${city.statecode}`,
+    );
     fetch(
-      `https://api.api-ninjas.com/v1/propertytax?city=${city.name}&state=${getStateCode(city.state)}`,
+      `https://api.api-ninjas.com/v1/propertytax?city=${city.name}&state=${city.statecode}`,
       requestOptions,
     )
       .then((response) => response.json())
-      .then((result) => {
+      .then(async (result) => {
         //Some cities have multiple zip codes under the same name, this averages all of them
         let avg25 = 0;
         let avg75 = 0;
+        console.log(result);
         if (result.length > 0) {
           for (const value of result) {
             avg25 += value.property_tax_25th_percentile;
@@ -48,37 +52,37 @@ export default async () => {
           avg25 /= result.length;
           avg75 /= result.length;
         }
-
-        fetch(
-          `https://api.api-ninjas.com/v1/salestax?city=${city.name}&state=${city.state}`,
-          requestOptions,
-        )
-          .then((response) => response.json())
-          .then(async (result) => {
-            let sales = 0;
-            if (result.length > 0) {
-              for (const value of result) {
-                sales += parseFloat(value.state_rate);
-              }
-              sales /= result.length;
+        try {
+          let response = await fetch(
+            `https://api.api-ninjas.com/v1/salestax?city=${city.name}&state=${city.state}`,
+            requestOptions,
+          );
+          let result = await response.json();
+          let sales = 0;
+          if (result.length > 0) {
+            for (const value of result) {
+              sales += parseFloat(value.state_rate);
             }
-            count++;
-            if (sales || avg25 || avg75) {
-              const data: taxCreateInput = {
-                salestax: sales,
-                propertytaxquarter: avg25,
-                propertytaxthreequarters: avg75,
-                city: { connect: city },
-              };
-              await taxRepository.upsertByCityId(city.id, data, data);
-            } else {
-              console.error(`No Tax Info on ${city.name}`);
-            }
-            if (count >= cities.length) {
-              console.log("Finished loading tax information");
-            }
-          })
-          .catch((error) => console.error(error));
+            sales /= result.length;
+          }
+          count++;
+          if (sales || avg25 || avg75) {
+            const data: taxCreateInput = {
+              salestax: sales,
+              propertytaxquarter: avg25,
+              propertytaxthreequarters: avg75,
+              city: { connect: city },
+            };
+            await taxRepository.upsertByCityId(city.id, data, data);
+          } else {
+            console.error(`No Tax Info on ${city.name}`);
+          }
+          if (count >= cities.length) {
+            console.log("Finished loading tax information");
+          }
+        } catch (e) {
+          console.log(`unable to get taxes for ${city.name}`);
+        }
       })
       .catch((error) => console.error(error));
   }
