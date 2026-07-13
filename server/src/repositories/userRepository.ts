@@ -20,11 +20,11 @@ export const userRepository: UserRepository = {
       return parsePrismaError(e);
     }
   },
-  async findByIdIncludePassword(id) {
+  async findByEmailIncludePassword(email) {
     try {
       const user = await prisma.user.findUnique({
         where: {
-          userid: id,
+          email: email,
         },
         select: {
           userid: true,

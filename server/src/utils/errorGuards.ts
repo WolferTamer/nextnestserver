@@ -21,7 +21,7 @@ export type Err = {
   type?: ErrTypes; // Optional type for categorizing errors
 };
 
-enum ErrTypes {
+export enum ErrTypes {
   NOTFOUND,
   UNIQUEVIOLATION,
   FOREIGNVIOLATION,

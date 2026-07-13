@@ -1,8 +1,5 @@
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
 import { Request, Response } from "express";
-import { userRepository } from "../repositories/userRepository";
-import { isErr } from "../utils/errorGuards";
+import { getAuthService, postAuthService } from "../services/authService";
 
 export const get = {
   route: "/api/auth",
@@ -14,11 +11,9 @@ export const get = {
       });
       return;
     }
-    jwt.verify(token, process.env.SECRETKEY!, (err, user) => {
-      if (err) return res.sendStatus(403);
-      res.status(200).json({
-        auth: token,
-      });
+    const auth = await getAuthService(token);
+    res.json({
+      auth: auth,
     });
   },
 };
@@ -46,45 +41,7 @@ export const post = {
       });
       return;
     }
-    let userObject = await userRepository.findByIdIncludePassword(user.id);
-    if (isErr(userObject)) {
-      res.status(403).json({
-        error: "Invalid credentials",
-      });
-      return;
-    } else if (!userObject) {
-      res.status(404).json({
-        error: "No user by that ID",
-      });
-      return;
-    }
-    let hashed = userObject.password;
-    bcrypt.compare(password, hashed, (err, data) => {
-      if (err) {
-        res.status(500).json({
-          error: "Internal error",
-        });
-        return;
-      }
-      if (data) {
-        const token = jwt.sign(
-          { userId: userObject.userid },
-          process.env.SECRETKEY!,
-        );
-        res.status(200).json({
-          auth: token,
-          user: {
-            userid: userObject.userid,
-            username: userObject.username,
-          },
-        });
-        return;
-      } else {
-        res.status(403).json({
-          error: "Invalid credentials",
-        });
-        return;
-      }
-    });
+    const auth = await postAuthService({ email: email, password: password });
+    res.json(auth);
   },
 };
