@@ -7,6 +7,7 @@ import { City } from "../types";
 import { userRepository } from "../repositories/userRepository";
 import { isErr } from "../utils/errorGuards";
 import { cityRepository } from "../repositories/cityRepository";
+import { getCityService, getManyCitiesService } from "../services/cityService";
 
 //PARAMS: id (optional, the id number of the city), name (option, the name, or partial name, of the city)
 //RESULTS: No params results in a list of all cities.
@@ -16,28 +17,14 @@ import { cityRepository } from "../repositories/cityRepository";
 export const get = {
   route: "/api/city",
   execute: async (req: Request, res: Response) => {
-    let cities: City[];
-
     if (req.query.id) {
-      const r = await cityRepository.findById(Number(req.query.id));
-      if (isErr(r) || !r) cities = [];
-      else cities = [r];
-    } else if (req.query.name) {
-      const r = await cityRepository.findByLike(`%${req.query.name}%`);
-      if (isErr(r)) cities = [];
-      else cities = r;
+      const city = await getCityService(Number(req.query.id));
+      res.json({ city: city });
     } else {
-      const r = await cityRepository.getAll();
-      if (isErr(r)) cities = [];
-      else cities = r;
+      const cities = await getManyCitiesService(
+        req.query.name as string | undefined,
+      );
+      res.json({ cities: cities });
     }
-
-    if (cities.length < 1) {
-      res.status(404).json({
-        error: "No city of that name or id found.",
-      });
-      return;
-    }
-    res.json({ cities: cities });
   },
 };
