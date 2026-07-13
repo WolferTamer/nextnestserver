@@ -1,6 +1,7 @@
 import { weatherCreateInput } from "../generated/prisma/models";
 import { cityRepository } from "../repositories/cityRepository";
 import { weatherRepository } from "../repositories/weatherRepository";
+import { City } from "../types";
 import { isErr } from "../utils/errorGuards";
 
 //Sleep function is used for delay between API calls. If there is no delay, API Ninja will return only errors for most API calls.
@@ -27,65 +28,87 @@ export default async () => {
     headers: myHeaders,
     redirect: "follow",
   } satisfies RequestInit;
-  //Count the amount of cities handled so we know when all API calls are finished
-  //Needs to be seperate from i because API calls are async while the for loop itself is not
   let count = 0;
+  let stationIdMap: { [key: number]: string } = {};
   for (let i = 0; i < cities.length; i++) {
-    await sleep(50);
+    await sleep(300);
     const city = cities[i];
-    let url = `https://history.openweathermap.org/data/2.5/aggregated/month?`;
-    url += `month=1`;
-    url += `&lat=${city.lat}`;
-    url += `&lon=${city.lon}`;
-    url += `&appid=${process.env.OPENWEATHERKEY}`;
-    fetch(url, requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
-        let data: weatherCreateInput = {
-          jantemp: 0,
-          janhumidity: 0,
-          janwind: 0,
-          janprecipitation: 0,
-          janclouds: 0,
-          julytemp: 0,
-          julyhumidity: 0,
-          julywind: 0,
-          julyprecipitation: 0,
-          julyclouds: 0,
-          city: { connect: { id: city.id } },
-        };
-        if (result.result) {
-          data.jantemp = result.result.temp.median;
-          data.janhumidity = result.result.humidity.median;
-          data.janwind = result.result.wind.median;
-          data.janprecipitation = result.result.precipitation.mean;
-          data.janclouds = result.result.clouds.median;
-        }
-        url = `https://history.openweathermap.org/data/2.5/aggregated/month?`;
-        url += `month=7`;
-        url += `&lat=${city.lat}`;
-        url += `&lon=${city.lon}`;
-        url += `&appid=${process.env.OPENWEATHERKEY}`;
-        fetch(url, requestOptions)
-          .then((response) => response.json())
-          .then(async (result) => {
-            count++;
-            if (result.result) {
-              data.julytemp = result.result.temp.median;
-              data.julyhumidity = result.result.humidity.median;
-              data.julywind = result.result.wind.median;
-              data.julyprecipitation = result.result.precipitation.mean;
-              data.julyclouds = result.result.clouds.median;
-            }
-
-            await weatherRepository.upsertByCityId(city.id, data, data);
-
-            if (count >= cities.length) {
-              console.log("Finished loading Weather information");
-            }
-          })
-          .catch((error) => console.error(error));
-      })
-      .catch((error) => console.error(error));
+    fetch(
+      `https://www.ncei.noaa.gov/cdo-web/api/v2/stations?extent=${city.lat - 0.2},${city.lon - 0.2},${city.lat + 0.2},${city.lon + 0.2}&datasetid=NORMAL_ANN&limit=25`,
+      {
+        headers: {
+          token: process.env.CDO_TOKEN!,
+        },
+        method: "GET",
+        redirect: "follow",
+      },
+    ).then((stations) => {
+      count++;
+      if (stations.status == 200) {
+        stations.json().then((json) => {
+          if (json.results && json.results.length > 1) {
+            let station = json.results.find((s: { [key: string]: any }) =>
+              s.id.includes("USW"),
+            );
+            if (!station) station = json.results[0];
+            stationIdMap[city.id] = station.id;
+          }
+          if (count >= cities.length) {
+            getWeatherFromStations(stationIdMap, cities);
+          }
+        });
+      }
+    });
   }
 };
+
+async function getWeatherFromStations(
+  stationMap: { [key: number]: string },
+  cities: City[],
+) {
+  for (const city of cities) {
+    await sleep(300);
+    if (stationMap[city.id]) {
+      fetchWeather(stationMap[city.id]).then(async (res) => {
+        if (res.status == 200) {
+          const json = await res.json();
+          console.log(json);
+
+          let data: weatherCreateInput = {
+            jantemp: json.results.find(
+              (i: { [key: string]: any }) => i.datatype === "DJF-TAVG-NORMAL",
+            )?.value,
+            janprecipitation: json.results.find(
+              (i: { [key: string]: any }) => i.datatype === "DJF-PRCP-NORMAL",
+            )?.value,
+            julytemp: json.results.find(
+              (i: { [key: string]: any }) => i.datatype === "JJA-TAVG-NORMAL",
+            )?.value,
+            julyprecipitation: json.results.find(
+              (i: { [key: string]: any }) => i.datatype === "JJA-PRCP-NORMAL",
+            )?.value,
+            city: { connect: { id: city.id } },
+          };
+          weatherRepository.upsertByCityId(city.id, data, data);
+        }
+      });
+    }
+  }
+  console.log("Finished Creating weather");
+}
+
+function fetchWeather(id: string) {
+  let str = `https://www.ncei.noaa.gov/cdo-web/api/v2/data`;
+  str += `?datasetid=NORMAL_ANN`;
+  str += `&stationid=${id}`;
+  str += `&startdate=2010-01-01&enddate=2010-12-31`;
+  str += `&units=standard`;
+  str += `&datatypeid=ANN-TAVG-NORMAL,ANN-TMAX-NORMAL,ANN-TMIN-NORMAL,ANN-PRCP-NORMAL,ANN-SNOW-NORMAL,ANN-PRCP-AVGNDS-GE001HI,ANN-HTDD-NORMAL,ANN-CLDD-NORMAL,DJF-TAVG-NORMAL,MAM-TAVG-NORMAL,JJA-TAVG-NORMAL,SON-TAVG-NORMAL,DJF-PRCP-NORMAL,MAM-PRCP-NORMAL,JJA-PRCP-NORMAL,SON-PRCP-NORMAL`;
+  return fetch(str, {
+    method: "GET",
+    headers: {
+      token: process.env.CDO_TOKEN!,
+    },
+    redirect: "follow",
+  });
+}

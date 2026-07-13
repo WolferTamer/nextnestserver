@@ -35,6 +35,22 @@ export const cityRepository: CityRepository = {
       return parsePrismaError(e);
     }
   },
+  async findByState<T extends cityInclude = {}>(
+    state: string,
+    include: T,
+  ): Promise<cityGetPayload<{ include: T }>[] | Err> {
+    try {
+      const city = await prisma.city.findMany({
+        where: {
+          state: state,
+        },
+        include,
+      });
+      return city as cityGetPayload<{ include: T }>[];
+    } catch (e) {
+      return parsePrismaError(e);
+    }
+  },
   async create(data) {
     try {
       const newCity = await prisma.city.create({ data: data });
@@ -68,16 +84,13 @@ export const cityRepository: CityRepository = {
   async upsertMany(data) {
     const promises: Promise<City>[] = [];
     try {
-      for (const d of data) {
-        promises.push(
-          prisma.city.upsert({
-            where: { id: d.id },
-            update: d.update,
-            create: d.create,
-          }),
-        );
-      }
-      const res = await Promise.all(promises);
+      const res = await prisma.$transaction(
+        data.map((row) =>
+          row.id == -1
+            ? prisma.city.create({ data: row.create })
+            : prisma.city.update({ where: { id: row.id }, data: row.update }),
+        ),
+      );
       return res;
     } catch (e) {
       return parsePrismaError(e);

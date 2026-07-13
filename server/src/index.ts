@@ -1,8 +1,8 @@
+import "dotenv/config";
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 const app = express();
 import fs from "fs";
-const dotenv = require("dotenv").config();
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;
 import initialize from "./initializers";
 import jwt from "jsonwebtoken";
@@ -27,12 +27,14 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
 };
 
 //Reads every file inside /routes and uses them to initialize endpoints
-fs.readdir("server/routes", (err, files) => {
+fs.readdir("./src/routes", (err, files) => {
   if (err) {
     console.error("Error reading directory:", err);
     return;
   }
-  let filteredfiles = files.filter((file) => file.endsWith(".js"));
+  let filteredfiles = files.filter(
+    (file) => file.endsWith(".js") || file.endsWith(".ts"),
+  );
 
   for (let file of filteredfiles) {
     const methods = require(`./routes/${file}`);
@@ -64,4 +66,14 @@ app.get("/api", (req, res) => {
 //Start accepting HTTP requests
 app.listen(PORT, "::", () => {
   console.log(`Server listening on ${PORT}`);
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("Unhandled rejection:", reason);
+  process.exit(1);
+});
+
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught exception:", err);
+  process.exit(1);
 });

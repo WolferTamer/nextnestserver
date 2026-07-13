@@ -48,3 +48,16 @@ export type TaxDto = taxGetPayload<{}>;
 
 export type IncomeTax = incometaxGetPayload<{}>;
 export type IncomeTaxDto = incometaxGetPayload<{}>;
+
+export type LoginDto = {
+  email: string;
+  password: string;
+};
+
+export type AuthDto = {
+  auth: string;
+  user: {
+    userid: number;
+    username: string;
+  };
+};

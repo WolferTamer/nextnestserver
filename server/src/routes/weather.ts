@@ -1,24 +1,17 @@
 import { Request, Response } from "express";
 import { weatherRepository } from "../repositories/weatherRepository";
 import { isErr } from "../utils/errorGuards";
+import { getWeatherByCityIdService } from "../services/weatherService";
 
 export const get = {
   route: "/api/weather",
   execute: async (req: Request, res: Response) => {
-    let data;
-
     if (req.query.id) {
-      data = await weatherRepository.findByCityId(Number(req.query.id));
+      const weather = await getWeatherByCityIdService(Number(req.query.id));
+      res.json({ weather: weather });
     } else {
-      data = await weatherRepository.getAll();
+      const weather = await weatherRepository.getAll();
+      res.json({ weather: weather });
     }
-
-    if (isErr(data) || !data) {
-      res.status(404).json({
-        error: "No city of that name or id found.",
-      });
-      return;
-    }
-    res.json({ weather: data });
   },
 };

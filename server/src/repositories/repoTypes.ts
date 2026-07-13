@@ -23,7 +23,9 @@ import { Err } from "../utils/errorGuards";
 
 export interface UserRepository {
   findById(id: number): Promise<User | null | Err>;
-  findByIdIncludePassword(id: number): Promise<UserWithPassword | null | Err>;
+  findByEmailIncludePassword(
+    email: string,
+  ): Promise<UserWithPassword | null | Err>;
   getAll(): Promise<User[] | Err>;
   create(data: userCreateInput): Promise<User | Err>;
   editById(id: number, data: userUpdateInput): Promise<User | Err>;
@@ -50,6 +52,10 @@ export interface CityRepository {
     include?: T,
   ): Promise<cityGetPayload<{ include: T }> | null | Err>;
   findByLike(query: string): Promise<City[] | Err>;
+  findByState<T extends cityInclude = {}>(
+    state: string,
+    include: T,
+  ): Promise<cityGetPayload<{ include: T }>[] | null | Err>;
   getAll<T extends cityInclude = {}>(
     include?: T,
   ): Promise<cityGetPayload<{ include: T }>[] | Err>;
