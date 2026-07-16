@@ -3,7 +3,8 @@ export {};
 declare global {
   namespace Express {
     interface Request {
-      validated: unknown;
+      validated?: unknown;
+      user?: unknown;
     }
   }
 }

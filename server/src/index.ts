@@ -17,17 +17,6 @@ if (process.argv.length > 2) {
 app.use(cors());
 app.use(express.json());
 
-const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.sendStatus(401);
-
-  jwt.verify(token, process.env.SECRETKEY!, (err, user) => {
-    if (err) return res.sendStatus(403);
-    //req.user = user;
-    next();
-  });
-};
-
 //Reads every file inside /routes and uses them to initialize endpoints
 app.use("/api/user", userRouter);
 
