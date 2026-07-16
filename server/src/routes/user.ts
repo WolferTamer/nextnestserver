@@ -1,4 +1,4 @@
-import { Request, Response, Router } from "express";
+import { Router } from "express";
 import { userCreateInput, userUpdateInput } from "../generated/prisma/models";
 import {
   getUserService,
@@ -11,7 +11,6 @@ import {
   getUserSchema,
   updateUserSchema,
 } from "../validators/userValidors";
-import { requireAuth } from "../middleware/requireAuth";
 import { authenticateAndValidate } from "../middleware/authenticateAndValidate";
 
 const userRouter = Router();

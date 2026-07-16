@@ -2,12 +2,16 @@ import "dotenv/config";
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 const app = express();
-import fs from "fs";
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;
 import initialize from "./initializers";
-import jwt from "jsonwebtoken";
 import userRouter from "./routes/user";
 import { errorHandler } from "./middleware/errorHandler";
+import authRouter from "./routes/auth";
+import cityRouter from "./routes/city";
+import incomeTaxRouter from "./routes/incometax";
+import questionRouter from "./routes/question";
+import taxRouter from "./routes/tax";
+import weatherRouter from "./routes/weather";
 
 if (process.argv.length > 2) {
   initialize(process.argv);
@@ -19,6 +23,12 @@ app.use(express.json());
 
 //Reads every file inside /routes and uses them to initialize endpoints
 app.use("/api/user", userRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/city", cityRouter);
+app.use("/api/incometax", incomeTaxRouter);
+app.use("/api/question", questionRouter);
+app.use("/api/tax", taxRouter);
+app.use("/api/weather", weatherRouter);
 
 app.get("/api", (req, res) => {
   res.json({ message: "Hello from server Wow!" });
