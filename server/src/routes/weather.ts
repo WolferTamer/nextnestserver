@@ -1,17 +1,24 @@
-import { Request, Response } from "express";
-import { weatherRepository } from "../repositories/weatherRepository";
-import { isErr } from "../utils/errorGuards";
-import { getWeatherByCityIdService } from "../services/weatherService";
+import { Router } from "express";
+import {
+  getAllWeatherService,
+  getWeatherByCityIdService,
+} from "../services/weatherService";
+import { validatedRoute } from "../middleware/validate";
+import { getWeatherValidator } from "../validators/weatherValidator";
 
-export const get = {
-  route: "/api/weather",
-  execute: async (req: Request, res: Response) => {
-    if (req.query.id) {
-      const weather = await getWeatherByCityIdService(Number(req.query.id));
+const weatherRouter = Router();
+
+weatherRouter.get(
+  "/",
+  ...validatedRoute(getWeatherValidator, async (req, res) => {
+    if (req.validated.query.id) {
+      const weather = await getWeatherByCityIdService(req.validated.query.id);
       res.json({ weather: weather });
     } else {
-      const weather = await weatherRepository.getAll();
+      const weather = await getAllWeatherService();
       res.json({ weather: weather });
     }
-  },
-};
+  }),
+);
+
+export default weatherRouter;

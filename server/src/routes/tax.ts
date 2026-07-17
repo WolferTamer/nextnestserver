@@ -1,18 +1,18 @@
-import { Request, Response } from "express";
-import { Tax } from "../types";
-import { taxRepository } from "../repositories/taxRepository";
-import { isErr } from "../utils/errorGuards";
+import { Router } from "express";
 import {
   getAllTaxesService,
   getTaxByCityIdService,
 } from "../services/taxService";
+import { validatedRoute } from "../middleware/validate";
+import { getTaxValidator } from "../validators/taxValidator";
 
-//TODO: Add params and results that correspond to city IDs and name/states
-export const get = {
-  route: "/api/tax",
-  execute: async (req: Request, res: Response) => {
-    if (req.query.id) {
-      const tax = await getTaxByCityIdService(Number(req.query.id));
+const taxRouter = Router();
+
+taxRouter.get(
+  "/",
+  ...validatedRoute(getTaxValidator, async (req, res) => {
+    if (req.validated.query.id) {
+      const tax = await getTaxByCityIdService(req.validated.query.id);
       res.json({
         tax: tax,
       });
@@ -22,5 +22,9 @@ export const get = {
         taxes: taxes,
       });
     }
-  },
-};
+  }),
+);
+
+//TODO: Add params and results that correspond to city IDs and name/states
+
+export default taxRouter;

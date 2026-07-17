@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "../errors";
 import { Prisma } from "../generated/prisma/client";
+import { treeifyError, ZodError } from "zod";
 export function errorHandler(
   err: Error,
   req: Request,
@@ -13,6 +14,16 @@ export function errorHandler(
       error: {
         code: err.constructor.name,
         message: err.message,
+      },
+    });
+  }
+
+  if (err instanceof ZodError) {
+    return res.status(400).json({
+      error: {
+        code: "ValidationError",
+        message: "Invalid request data",
+        details: treeifyError(err),
       },
     });
   }
