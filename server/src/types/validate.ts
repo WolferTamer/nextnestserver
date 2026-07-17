@@ -1,6 +1,6 @@
 import { Request } from "express";
-import z, { ZodObject } from "zod";
+import z, { ZodType } from "zod";
 
-export type ValidatedRequest<T extends ZodObject> = Request & {
+export type ValidatedRequest<T extends ZodType> = Request & {
   validated: z.infer<T>;
 };

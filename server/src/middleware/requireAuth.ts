@@ -1,16 +1,28 @@
-import { RequestHandler } from "express";
+import { NextFunction, RequestHandler, Response } from "express";
 import jwt from "jsonwebtoken";
 import { UnauthorizedError } from "../errors";
-import { AuthUser } from "../types/auth";
+import { AuthenticatedRequest, AuthUser } from "../types/auth";
 
-export const requireAuth: RequestHandler = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.sendStatus(401);
+export function requireAuth(
+  handler: (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ) => any,
+): RequestHandler[] {
+  const authHandler: RequestHandler = (req, res, next) => {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.sendStatus(401);
 
-  try {
-    req.user = jwt.verify(token, process.env.SECRETKEY!) as AuthUser;
-    next();
-  } catch {
-    next(new UnauthorizedError("Invalid or expired token"));
-  }
-};
+    try {
+      req.user = jwt.verify(token, process.env.SECRETKEY!) as AuthUser;
+      next();
+    } catch {
+      next(new UnauthorizedError("Invalid or expired token"));
+    }
+  };
+
+  const runHandler: RequestHandler = (req, res, next) =>
+    handler(req as AuthenticatedRequest, res, next);
+  return [authHandler, runHandler];
+}

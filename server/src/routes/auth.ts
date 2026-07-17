@@ -1,46 +1,35 @@
 import { Request, Response, Router } from "express";
 import { getAuthService, postAuthService } from "../services/authService";
+import { requireAuth } from "../middleware/requireAuth";
+import { AuthenticatedRequest } from "../types/auth";
+import { validatedRoute } from "../middleware/validate";
+import { postAuthValidator } from "../validators/authValidator";
 
 const authRouter = Router();
 
-authRouter.get("/", async (req: Request, res: Response) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) {
-    res.status(400).json({
-      error: "No body or authorization header",
+authRouter.get(
+  "/",
+  ...requireAuth(async (req, res) => {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      res.status(400).json({
+        error: "No body or authorization header",
+      });
+      return;
+    }
+    const auth = await getAuthService(token);
+    res.json({
+      auth: auth,
     });
-    return;
-  }
-  const auth = await getAuthService(token);
-  res.json({
-    auth: auth,
-  });
-});
+  }),
+);
 
-authRouter.post("/", async (req: Request, res: Response) => {
-  if (!req.body) {
-    res.status(400).json({
-      error: "No body",
-    });
-    return;
-  }
-  let user = req.body.user;
-  if (!user) {
-    res.status(400).json({
-      error: "No user object in body",
-    });
-    return;
-  }
-  let email = user.email;
-  let password = user.password;
-  if (!email || !password) {
-    res.status(400).json({
-      error: "User object missing email or password",
-    });
-    return;
-  }
-  const auth = await postAuthService({ email: email, password: password });
-  res.json(auth);
-});
+authRouter.post(
+  "/",
+  ...validatedRoute(postAuthValidator, async (req, res) => {
+    const auth = await postAuthService(req.validated.body.user);
+    res.json(auth);
+  }),
+);
 
 export default authRouter;

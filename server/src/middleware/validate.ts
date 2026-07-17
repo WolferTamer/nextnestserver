@@ -1,8 +1,8 @@
 import { Response, NextFunction, RequestHandler } from "express";
 import { ValidatedRequest } from "../types/validate";
-import { ZodObject } from "zod";
+import { ZodType } from "zod";
 
-export function validatedRoute<T extends ZodObject>(
+export function validatedRoute<T extends ZodType>(
   schema: T,
   handler: (req: ValidatedRequest<T>, res: Response, next: NextFunction) => any,
 ): RequestHandler[] {

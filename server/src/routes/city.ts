@@ -4,20 +4,24 @@
 
 import { Request, Response, Router } from "express";
 import { getCityService, getManyCitiesService } from "../services/cityService";
+import { validatedRoute } from "../middleware/validate";
+import { getCityValidator } from "../validators/cityValidator";
 
 const cityRouter = Router();
 
-cityRouter.get("/", async (req: Request, res: Response) => {
-  if (req.query.id) {
-    const city = await getCityService(Number(req.query.id));
-    res.json({ city: city });
-  } else {
-    const cities = await getManyCitiesService(
-      req.query.name as string | undefined,
-    );
-    res.json({ cities: cities });
-  }
-});
+cityRouter.get(
+  "/",
+  ...validatedRoute(getCityValidator, async (req, res) => {
+    const { id, name } = req.validated.query;
+    if (id) {
+      const city = await getCityService(id);
+      res.json({ city: city });
+    } else {
+      const cities = await getManyCitiesService(name);
+      res.json({ cities: cities });
+    }
+  }),
+);
 
 //PARAMS: id (optional, the id number of the city), name (option, the name, or partial name, of the city)
 //RESULTS: No params results in a list of all cities.
