@@ -15,7 +15,7 @@ export const getUserSchema = z.object({
 });
 
 export const updateUserSchema = z.object({
-  params: z.object({
+  query: z.object({
     id: z.coerce.number().int().positive(),
   }),
   body: z.object({

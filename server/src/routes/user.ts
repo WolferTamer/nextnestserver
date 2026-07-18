@@ -31,7 +31,7 @@ userRouter.post(
   ...validatedRoute(createUserSchema, async (req, res) => {
     let user: userCreateInput = req.validated.body;
     let newUser = await postUserService(user);
-    res.status(203).json(newUser);
+    res.status(201).json(newUser);
   }),
 );
 

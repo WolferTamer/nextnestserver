@@ -12,6 +12,7 @@ import incomeTaxRouter from "./routes/incometax";
 import questionRouter from "./routes/question";
 import taxRouter from "./routes/tax";
 import weatherRouter from "./routes/weather";
+import cookieParser from "cookie-parser";
 
 if (process.argv.length > 2) {
   initialize(process.argv);
@@ -19,6 +20,7 @@ if (process.argv.length > 2) {
 
 //Requires CORS headers to run on localhost with react app
 app.use(cors());
+app.use(cookieParser(process.env.SECRETKEY!));
 app.use(express.json());
 
 //Reads every file inside /routes and uses them to initialize endpoints
