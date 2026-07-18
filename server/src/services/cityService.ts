@@ -8,7 +8,7 @@ export const getManyCitiesService = async (
 ): Promise<CityDto[]> => {
   let cities: CityDto[];
   if (like) {
-    const r = await cityRepository.findByLike(`%${like}%`);
+    const r = await cityRepository.findByLike(like);
     if (isErr(r)) cities = [];
     else cities = r;
   } else {

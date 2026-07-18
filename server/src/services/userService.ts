@@ -11,31 +11,30 @@ import { ErrTypes, isErr } from "../utils/errorGuards";
 import { userCreateInput, userUpdateInput } from "../generated/prisma/models";
 import bcrypt from "bcrypt";
 import { AuthUser } from "../types/auth";
+import signAccessToken from "../utils/signAccessToken";
 
 export const getUserService = async (
   id: number,
   user: AuthUser,
 ): Promise<UserDto> => {
-  return new Promise<UserDto>(async (res) => {
-    //Compare requested id and id from token
-    //Fetch user from SQL
-    //If mismatch return 403
-    //If match return 200 with account information excluding password
+  //Compare requested id and id from token
+  //Fetch user from SQL
+  //If mismatch return 403
+  //If match return 200 with account information excluding password
 
-    let tokenid = user.userid;
-    if (id == tokenid) {
-      let findResult = await userRepository.findById(tokenid);
-      if (!findResult) {
-        throw new NotFoundError("User");
-      } else if (isErr(findResult)) {
-        throw new ValidationError(findResult.error);
-      }
-      const dto: UserDto = findResult;
-      res(dto);
-    } else {
-      throw new UnauthorizedError();
+  let tokenid = user.userid;
+  if (id == tokenid) {
+    let findResult = await userRepository.findById(tokenid);
+    if (!findResult) {
+      throw new NotFoundError("User");
+    } else if (isErr(findResult)) {
+      throw new ValidationError(findResult.error);
     }
-  });
+    const dto: UserDto = findResult;
+    return dto;
+  } else {
+    throw new UnauthorizedError();
+  }
 };
 
 export const postUserService = async (
@@ -52,7 +51,7 @@ export const postUserService = async (
       throw new ValidationError("Unable to create new user.");
     }
   }
-  const token = jwt.sign({ userId: newUser.userid }, process.env.SECRETKEY!);
+  const token = signAccessToken(newUser.userid);
   return {
     auth: token,
     user: {

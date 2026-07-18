@@ -28,8 +28,13 @@ export const cityRepository: CityRepository = {
   },
   async findByLike(query) {
     try {
-      const cities = await prisma.$queryRaw<City[]>`
-        SELECT * from "city" WHERE "name" LIKE '${query}' LIMIT 10;`;
+      const cities = await prisma.city.findMany({
+        where: {
+          name: {
+            contains: query,
+          },
+        },
+      });
       return cities;
     } catch (e) {
       return parsePrismaError(e);

@@ -53,13 +53,27 @@ model tax {
 }
 
 model user {
-  userid    Int      @id @default(autoincrement())
-  email     String   @unique(map: "email") @db.VarChar(255)
-  password  String   @db.VarChar(255)
-  username  String   @db.VarChar(255)
+  userid    Int       @id @default(autoincrement())
+  email     String    @unique(map: "email") @db.VarChar(255)
+  password  String    @db.VarChar(255)
+  username  String    @db.VarChar(255)
   salary    Int?
-  createdAt DateTime @default(now()) @db.DateTime(0)
-  updatedAt DateTime @default(now()) @db.DateTime(0)
+  createdAt DateTime  @default(now()) @db.DateTime(0)
+  updatedAt DateTime  @default(now()) @db.DateTime(0)
+  sessions  session[]
+}
+
+model session {
+  id          Int       @id @default(autoincrement())
+  refreshHash String
+  userAgent   String?
+  ip          String?
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  replacedBy  Int?
+  userid      Int
+  user        user      @relation(fields: [userid], references: [userid], onDelete: Cascade, map: "session_fk_1")
 }
 
 model weather {

@@ -4,6 +4,7 @@ import {
   cityInclude,
   cityUpdateInput,
   incometaxCreateInput,
+  sessionCreateInput,
   taxCreateInput,
   taxUpdateInput,
   userCreateInput,
@@ -14,6 +15,7 @@ import {
 import {
   City,
   IncomeTax,
+  Session,
   Tax,
   User,
   UserWithPassword,
@@ -93,4 +95,16 @@ export interface IncomeTaxRepository {
     income: number,
     married?: boolean,
   ): Promise<IncomeTax[] | Err>;
+}
+
+export interface SessionRepository {
+  findByUserId(id: number): Promise<Session[] | Err>;
+  findById(id: number): Promise<Session | null | Err>;
+  create(data: sessionCreateInput): Promise<Session | Err>;
+  revoke(session: Session): Promise<void | Err>;
+  revokeFamily(session: Session): Promise<number | Err>;
+  replace(
+    oldSession: number,
+    newSession: sessionCreateInput,
+  ): Promise<Session | Err>;
 }

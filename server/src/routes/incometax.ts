@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { Router } from "express";
 import { incomeTaxRepository } from "../repositories/incometaxRepository";
 import { isErr } from "../utils/errorGuards";
@@ -11,7 +11,7 @@ incomeTaxRouter.get("/", async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
   jwt.verify(token!, process.env.SECRETKEY!, async (err, user) => {
     let taxes: IncomeTax[] = [];
-    if (err) {
+    if (err || !user) {
       if (req.query.id) {
       } else if (req.query.state && req.query.salary) {
         let taxlist = await incomeTaxRepository.findByStateLt(
@@ -53,16 +53,10 @@ incomeTaxRouter.get("/", async (req, res) => {
         return;
       }
     } else {
-      if (!user || typeof user === "string") {
-        res.status(403).json({
-          error: "NO user object found",
-        });
-        return;
-      }
-      let userid = user.userId;
+      let userid = (user as JwtPayload).userid;
       let userObj = await userRepository.findById(userid);
       if (isErr(userObj) || !userObj) {
-        res.status(403).json({
+        res.status(404).json({
           error: "NO user object found",
         });
         return;

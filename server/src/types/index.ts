@@ -61,3 +61,15 @@ export type AuthDto = {
     username: string;
   };
 };
+
+export type Session = {
+  userid: number;
+  createdAt: Date;
+  id: number;
+  refreshHash: string;
+  userAgent: string | null;
+  ip: string | null;
+  expiresAt: Date;
+  revokedAt: Date | null;
+  replacedBy: number | null;
+};
