@@ -28,6 +28,7 @@ export interface UserRepository {
   findByEmailIncludePassword(
     email: string,
   ): Promise<UserWithPassword | null | Err>;
+  findByName(name: string): Promise<User[] | Err>;
   getAll(): Promise<User[] | Err>;
   create(data: userCreateInput): Promise<User | Err>;
   editById(id: number, data: userUpdateInput): Promise<User | Err>;

@@ -20,6 +20,18 @@ export const userRepository: UserRepository = {
       return parsePrismaError(e);
     }
   },
+  async findByName(name) {
+    try {
+      const user = await prisma.user.findMany({
+        where: {
+          OR: [{ username: { contains: name } }, { email: { contains: name } }],
+        },
+      });
+      return user;
+    } catch (e) {
+      return parsePrismaError(e);
+    }
+  },
   async findByEmailIncludePassword(email) {
     try {
       const user = await prisma.user.findUnique({
@@ -34,6 +46,7 @@ export const userRepository: UserRepository = {
           salary: true,
           createdAt: true,
           updatedAt: true,
+          role: true,
         },
       });
       if (user) {

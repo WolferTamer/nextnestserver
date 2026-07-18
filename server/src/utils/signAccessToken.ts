@@ -1,9 +1,10 @@
 import jwt from "jsonwebtoken";
 
-export default (id: number): string => {
+export default (id: number, role: string): string => {
   return jwt.sign(
     {
-      userid: id,
+      sub: id,
+      role: role,
     },
     process.env.SECRETKEY!,
     {

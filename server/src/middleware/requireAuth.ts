@@ -15,8 +15,11 @@ export function requireAuth(
     if (!token) return res.sendStatus(401);
 
     try {
-      req.user = jwt.verify(token, process.env.SECRETKEY!) as AuthUser;
-      next();
+      const user = jwt.verify(token, process.env.SECRETKEY!);
+      if (!user || typeof user === "string") {
+        throw new UnauthorizedError();
+      }
+      req.user = { userid: user.sub!, role: user.role };
     } catch {
       next(new UnauthorizedError("Invalid or expired token"));
     }

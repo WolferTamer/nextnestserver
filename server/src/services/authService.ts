@@ -38,7 +38,7 @@ export const loginService = async (
   ) {
     throw new UnauthorizedError();
   }
-  const accessToken = signAccessToken(userObject.userid);
+  const accessToken = signAccessToken(userObject.userid, userObject.role);
   const refreshToken = crypto.randomBytes(64).toString("hex");
   const refreshHash = sha256(refreshToken);
   const today = new Date();
@@ -112,7 +112,7 @@ export const refreshService = async (
   return {
     auth: {
       user: { userid: user.userid, username: user.username },
-      auth: signAccessToken(session.userid),
+      auth: signAccessToken(session.userid, user.role),
     },
     refresh: {
       value: `${newsession.id}.${newToken}`,

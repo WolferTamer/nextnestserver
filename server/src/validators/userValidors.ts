@@ -8,9 +8,15 @@ export const createUserSchema = z.object({
   }),
 });
 
-export const getUserSchema = z.object({
-  query: z.object({
+export const getUserByIdSchema = z.object({
+  params: z.object({
     id: z.coerce.number().int().positive(),
+  }),
+});
+
+export const getManyUsersSchema = z.object({
+  query: z.object({
+    name: z.string().optional(),
   }),
 });
 

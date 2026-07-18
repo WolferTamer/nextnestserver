@@ -60,7 +60,13 @@ model user {
   salary    Int?
   createdAt DateTime  @default(now()) @db.DateTime(0)
   updatedAt DateTime  @default(now()) @db.DateTime(0)
+  role      Role      @default(USER)
   sessions  session[]
+}
+
+enum Role {
+  USER
+  ADMIN
 }
 
 model session {
