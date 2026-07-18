@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { userCreateInput, userUpdateInput } from "../generated/prisma/models";
 import {
+  getManyUserService,
   getUserService,
   postUserService,
   putUserService,
@@ -8,21 +9,45 @@ import {
 import { validatedRoute } from "../middleware/validate";
 import {
   createUserSchema,
-  getUserSchema,
+  getManyUsersSchema,
+  getUserByIdSchema,
   updateUserSchema,
 } from "../validators/userValidors";
 import { authenticateAndValidate } from "../middleware/authenticateAndValidate";
+import { requireRole } from "../middleware/requireRole";
+import { authHandler } from "../utils/authHandler";
+import { requireAuth } from "../middleware/requireAuth";
 
 const userRouter = Router();
 
 userRouter.get(
-  "/",
-  ...authenticateAndValidate(getUserSchema, async (req, res) => {
-    let { id } = req.validated.query;
-    const user = await getUserService(id, req.user);
+  "/:id",
+  requireRole("ADMIN"),
+  ...validatedRoute(getUserByIdSchema, async (req, res) => {
+    let { id } = req.validated.params;
+    const user = await getUserService(id);
     res.json({
       user: user,
     });
+  }),
+);
+
+userRouter.get(
+  "/me",
+  ...requireAuth(async (req, res) => {
+    const user = await getUserService(req.user.userid);
+    res.json({
+      user: user,
+    });
+  }),
+);
+
+userRouter.get(
+  "/",
+  requireRole("ADMIN"),
+  ...validatedRoute(getManyUsersSchema, async (req, res) => {
+    const users = await getManyUserService(req.validated.query.name);
+    res.json({ users: users });
   }),
 );
 

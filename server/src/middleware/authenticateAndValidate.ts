@@ -19,7 +19,11 @@ export function authenticateAndValidate<T extends ZodObject>(
     }
 
     try {
-      req.user = jwt.verify(token, process.env.SECRETKEY!) as AuthUser;
+      const user = jwt.verify(token, process.env.SECRETKEY!);
+      if (!user || typeof user === "string") {
+        throw new UnauthorizedError();
+      }
+      req.user = { userid: user.sub!, role: user.role };
       next();
     } catch {
       next(new UnauthorizedError("Invalid or expired token"));

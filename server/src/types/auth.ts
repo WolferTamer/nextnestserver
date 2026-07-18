@@ -3,6 +3,7 @@ import z, { ZodObject } from "zod";
 
 export interface AuthUser {
   userid: number;
+  role: "USER" | "ADMIN";
 }
 
 export type AuthenticatedRequest = Request & { user: AuthUser };

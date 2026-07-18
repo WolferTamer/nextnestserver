@@ -12,6 +12,7 @@ export type UserDto = userGetPayload<{
   select: {
     userid: true;
     email: true;
+    role: true;
     username: true;
     salary: true;
     createdAt: true;
@@ -23,6 +24,7 @@ export type User = userGetPayload<{
   select: {
     userid: true;
     email: true;
+    role: true;
     username: true;
     salary: true;
     createdAt: true;
