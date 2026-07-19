@@ -8,7 +8,11 @@ import {
 } from "../utils/errorGuards";
 import { CityRepository } from "./repoTypes";
 import { City, User } from "../types";
-import { cityGetPayload, cityInclude } from "../generated/prisma/models";
+import {
+  cityFindManyArgs,
+  cityGetPayload,
+  cityInclude,
+} from "../generated/prisma/models";
 
 export const cityRepository: CityRepository = {
   async findById<T extends cityInclude = {}>(
@@ -36,6 +40,16 @@ export const cityRepository: CityRepository = {
         },
       });
       return cities;
+    } catch (e) {
+      return parsePrismaError(e);
+    }
+  },
+  async search<T extends cityInclude = {}>(
+    query: cityFindManyArgs,
+  ): Promise<cityGetPayload<{ include: T }>[] | Err> {
+    try {
+      const cities = await prisma.city.findMany(query);
+      return cities as cityGetPayload<{ include: T }>[];
     } catch (e) {
       return parsePrismaError(e);
     }
