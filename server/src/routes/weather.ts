@@ -8,16 +8,16 @@ import { getWeatherValidator } from "../validators/weatherValidator";
 
 const weatherRouter = Router();
 
+weatherRouter.get("/", async (req, res) => {
+  const weather = await getAllWeatherService();
+  res.json({ weather: weather });
+});
+
 weatherRouter.get(
-  "/",
+  "/city/:id",
   ...validatedRoute(getWeatherValidator, async (req, res) => {
-    if (req.validated.query.id) {
-      const weather = await getWeatherByCityIdService(req.validated.query.id);
-      res.json({ weather: weather });
-    } else {
-      const weather = await getAllWeatherService();
-      res.json({ weather: weather });
-    }
+    const weather = await getWeatherByCityIdService(req.validated.query.id);
+    res.json({ weather: weather });
   }),
 );
 
