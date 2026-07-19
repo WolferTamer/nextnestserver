@@ -40,7 +40,7 @@ authRouter.post(
   }),
 );
 
-authRouter.post("/refresh", async (req, res) => {
+authRouter.get("/refresh", async (req, res) => {
   if (!req.cookies) {
     throw new UnauthorizedError();
   }

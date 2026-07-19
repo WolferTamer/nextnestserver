@@ -8,20 +8,16 @@ import { getTaxValidator } from "../validators/taxValidator";
 
 const taxRouter = Router();
 
+taxRouter.get("/", async (req, res) => {
+  const weather = await getAllTaxesService();
+  res.json({ weather: weather });
+});
+
 taxRouter.get(
-  "/",
+  "/city/:id",
   ...validatedRoute(getTaxValidator, async (req, res) => {
-    if (req.validated.query.id) {
-      const tax = await getTaxByCityIdService(req.validated.query.id);
-      res.json({
-        tax: tax,
-      });
-    } else {
-      const taxes = await getAllTaxesService();
-      res.json({
-        taxes: taxes,
-      });
-    }
+    const weather = await getTaxByCityIdService(req.validated.query.id);
+    res.json({ weather: weather });
   }),
 );
 
