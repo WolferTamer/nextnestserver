@@ -13,6 +13,7 @@ import questionRouter from "./routes/question";
 import taxRouter from "./routes/tax";
 import weatherRouter from "./routes/weather";
 import cookieParser from "cookie-parser";
+import searchRouter from "./routes/search";
 
 if (process.argv.length > 2) {
   initialize(process.argv);
@@ -31,6 +32,7 @@ app.use("/api/incometax", incomeTaxRouter);
 app.use("/api/question", questionRouter);
 app.use("/api/tax", taxRouter);
 app.use("/api/weather", weatherRouter);
+app.use("/api/search", searchRouter);
 
 app.get("/api", (req, res) => {
   res.json({ message: "Hello from server Wow!" });

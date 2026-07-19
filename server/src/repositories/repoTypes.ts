@@ -1,5 +1,6 @@
 import {
   cityCreateInput,
+  cityFindManyArgs,
   cityGetPayload,
   cityInclude,
   cityUpdateInput,
@@ -55,6 +56,10 @@ export interface CityRepository {
     include?: T,
   ): Promise<cityGetPayload<{ include: T }> | null | Err>;
   findByLike(query: string): Promise<City[] | Err>;
+  search<T extends cityInclude = {}>(
+    query: cityFindManyArgs,
+    include?: T,
+  ): Promise<cityGetPayload<{ include: T }>[] | Err>;
   findByState<T extends cityInclude = {}>(
     state: string,
     include: T,
