@@ -1,4 +1,3 @@
-import { keyof } from "zod/mini";
 import { NotFoundError } from "../errors";
 import {
   cityFindManyArgs,
@@ -13,11 +12,11 @@ import { IncomeTax } from "../types";
 import { isErr } from "../utils/errorGuards";
 
 const convertWeather = (options: number) => {
-  let weather: {
+  const weather: {
     select: weatherSelect;
     where: weatherWhereInput;
   } = { select: {}, where: {} };
-  let summer = options % 4;
+  const summer = options % 4;
   if (summer > 0) {
     //Considered cold if less than 15 degrees celcius, hot if above 27 degrees celcius
     weather.select.julytemp = true;
@@ -76,7 +75,7 @@ export const searchService = async (input: {
   maxincome?: number;
   married: boolean;
 }) => {
-  let query: cityFindManyArgs = {};
+  const query: cityFindManyArgs = {};
   query.where = {};
   query.include = {};
 
@@ -105,7 +104,7 @@ export const searchService = async (input: {
   }
 
   if (salestax || typeof allowlocal !== "undefined") {
-    let taxQuery: {
+    const taxQuery: {
       select: taxSelect;
       where: taxWhereInput;
     } = {
@@ -126,14 +125,14 @@ export const searchService = async (input: {
     }
     query.include.tax = taxQuery;
   }
-  let income: { [key: string]: IncomeTax } = {};
+  const income: { [key: string]: IncomeTax } = {};
   if (maxincome && typeof salary !== "undefined") {
     //Find Income tax of same state, highest income tax without being greater than salary,
     //and the rate is lower than maxincome while matching married/unmarried. Include if there
     //is no income for the state.
-    let it = await incomeTaxRepository.findByLt(salary, married);
+    const it = await incomeTaxRepository.findByLt(salary, married);
     if (!isErr(it)) {
-      for (let state of it) {
+      for (const state of it) {
         const key = state.state;
         if (!income[key] || income[key]!.bracket! < state.bracket!) {
           income[key] = state;

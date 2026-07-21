@@ -1,14 +1,14 @@
 import { NextFunction, RequestHandler, Response } from "express";
 import jwt from "jsonwebtoken";
 import { UnauthorizedError } from "../errors";
-import { AuthenticatedRequest, AuthUser } from "../types/auth";
+import { AuthenticatedRequest } from "../types/auth";
 
 export function requireAuth(
   handler: (
     req: AuthenticatedRequest,
     res: Response,
     next: NextFunction,
-  ) => any,
+  ) => unknown,
 ): RequestHandler[] {
   const authHandler: RequestHandler = (req, res, next) => {
     const token = req.headers.authorization?.split(" ")[1];

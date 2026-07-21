@@ -6,7 +6,7 @@ export function authHandler(
     req: AuthenticatedRequest,
     tes: Response,
     next: NextFunction,
-  ) => any,
+  ) => unknown,
 ): RequestHandler {
   return (req, res, next) => handler(req as AuthenticatedRequest, res, next);
 }

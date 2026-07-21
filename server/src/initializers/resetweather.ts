@@ -21,15 +21,8 @@ export default async () => {
 
   //Empty the weather table before starting
 
-  const myHeaders = new Headers();
-
-  const requestOptions = {
-    method: "GET",
-    headers: myHeaders,
-    redirect: "follow",
-  } satisfies RequestInit;
   let count = 0;
-  let stationIdMap: { [key: number]: string } = {};
+  const stationIdMap: { [key: number]: string } = {};
   for (let i = 0; i < cities.length; i++) {
     await sleep(300);
     const city = cities[i];
@@ -47,7 +40,7 @@ export default async () => {
       if (stations.status == 200) {
         stations.json().then((json) => {
           if (json.results && json.results.length > 1) {
-            let station = json.results.find((s: { [key: string]: any }) =>
+            let station = json.results.find((s: { [key: string]: string }) =>
               s.id.includes("USW"),
             );
             if (!station) station = json.results[0];
@@ -74,18 +67,22 @@ async function getWeatherFromStations(
           const json = await res.json();
           console.log(json);
 
-          let data: weatherCreateInput = {
+          const data: weatherCreateInput = {
             jantemp: json.results.find(
-              (i: { [key: string]: any }) => i.datatype === "DJF-TAVG-NORMAL",
+              (i: { [key: string]: unknown }) =>
+                i.datatype === "DJF-TAVG-NORMAL",
             )?.value,
             janprecipitation: json.results.find(
-              (i: { [key: string]: any }) => i.datatype === "DJF-PRCP-NORMAL",
+              (i: { [key: string]: unknown }) =>
+                i.datatype === "DJF-PRCP-NORMAL",
             )?.value,
             julytemp: json.results.find(
-              (i: { [key: string]: any }) => i.datatype === "JJA-TAVG-NORMAL",
+              (i: { [key: string]: unknown }) =>
+                i.datatype === "JJA-TAVG-NORMAL",
             )?.value,
             julyprecipitation: json.results.find(
-              (i: { [key: string]: any }) => i.datatype === "JJA-PRCP-NORMAL",
+              (i: { [key: string]: unknown }) =>
+                i.datatype === "JJA-PRCP-NORMAL",
             )?.value,
             city: { connect: { id: city.id } },
           };

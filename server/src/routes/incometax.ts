@@ -1,9 +1,4 @@
-import jwt, { JwtPayload } from "jsonwebtoken";
 import { Router } from "express";
-import { incomeTaxRepository } from "../repositories/incometaxRepository";
-import { isErr } from "../utils/errorGuards";
-import { IncomeTax, IncomeTaxDto } from "../types";
-import { userRepository } from "../repositories/userRepository";
 import { authenticateAndValidate } from "../middleware/authenticateAndValidate";
 import {
   getIncometaxValidator,
@@ -15,6 +10,7 @@ import {
   getIncomeTaxByUserService,
   getIncomeTaxService,
 } from "../services/incometaxService";
+import { IncomeTaxDto } from "../types";
 
 const incomeTaxRouter = Router();
 

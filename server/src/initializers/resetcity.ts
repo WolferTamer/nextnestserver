@@ -10,7 +10,7 @@ function sleep(ms: number) {
   });
 }
 
-export default async (callback?: () => any) => {
+export default async () => {
   const cityFromDB = await cityRepository.getAll();
   if (isErr(cityFromDB)) throw Error(cityFromDB.error);
 
@@ -19,8 +19,6 @@ export default async (callback?: () => any) => {
   console.log("Beginning parse through CSV file.");
   //Get the amount of rows in the CSV. It uses this value so it knows when to use the callback. The callback is used for
   //Running the table inits that rely on city
-  let count = 0;
-  let maxcount = 0;
 
   const requestOptions = {
     method: "GET",
@@ -37,7 +35,7 @@ export default async (callback?: () => any) => {
   }[] = [];
   for await (const line of rl) {
     const fixedLine = line.replaceAll('"', "");
-    maxcount++;
+
     const row = fixedLine.split(",");
     const oldCity = cityFromDB.find((c) => c.name === row[1]);
     if (row[0].includes("pop2024")) {
@@ -49,8 +47,8 @@ export default async (callback?: () => any) => {
     )
       .then((response) => response.json())
       .then(async (result) => {
-        let lat = result[0] ? result[0].lat : 0;
-        let lon = result[0] ? result[0].lon : 0;
+        const lat = result[0] ? result[0].lat : 0;
+        const lon = result[0] ? result[0].lon : 0;
         //Check if the the city already exists in the DB. If it does, update it. Otherewise, insert a new city
         cities.push({
           id: oldCity ? oldCity.id : -1,

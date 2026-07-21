@@ -12,7 +12,7 @@ import { CookieOptions } from "express";
 
 export const getAuthService = async (authToken: string): Promise<string> => {
   return new Promise<string>((res) => {
-    jwt.verify(authToken, process.env.SECRETKEY!, (err, user) => {
+    jwt.verify(authToken, process.env.SECRETKEY!, (err) => {
       if (err) {
         throw new UnauthorizedError();
       }
@@ -30,7 +30,9 @@ export const loginService = async (
     options: CookieOptions;
   };
 }> => {
-  let userObject = await userRepository.findByEmailIncludePassword(creds.email);
+  const userObject = await userRepository.findByEmailIncludePassword(
+    creds.email,
+  );
   if (
     isErr(userObject) ||
     !userObject ||

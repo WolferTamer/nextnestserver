@@ -1,9 +1,4 @@
-import {
-  ConflictError,
-  NotFoundError,
-  UnauthorizedError,
-  ValidationError,
-} from "../errors";
+import { ConflictError, NotFoundError, ValidationError } from "../errors";
 import { userRepository } from "../repositories/userRepository";
 import { AuthDto, UserDto } from "../types";
 import { Err, ErrTypes, isErr } from "../utils/errorGuards";
@@ -18,7 +13,7 @@ export const getUserService = async (id: number): Promise<UserDto> => {
   //If mismatch return 403
   //If match return 200 with account information excluding password
 
-  let findResult = await userRepository.findById(id);
+  const findResult = await userRepository.findById(id);
   if (!findResult) {
     throw new NotFoundError("User");
   } else if (isErr(findResult)) {
@@ -46,7 +41,7 @@ export const getManyUserService = async (name?: string): Promise<UserDto[]> => {
 export const postUserService = async (
   user: userCreateInput,
 ): Promise<AuthDto> => {
-  let hashed = await bcrypt.hash(user.password, 10);
+  const hashed = await bcrypt.hash(user.password, 10);
   user.password = hashed;
   const newUser = await userRepository.create(user);
 

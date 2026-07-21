@@ -3,14 +3,14 @@
     "target": "esnext",
     "module": "nodenext",
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "./",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "allowJs": true,
     "checkJs": false,
-    "types":["node", "express"]
+    "types":["node", "express"],
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "eslint.config.mjs"]
 }

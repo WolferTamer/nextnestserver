@@ -1,9 +1,4 @@
 import {
-  getTaxQuery,
-  taxesResponse,
-  taxResponse,
-} from "../../validators/taxValidator";
-import {
   getWeatherQuery,
   manyWeatherResponse,
   weatherResponse,
@@ -25,7 +20,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: "get",
-  path: "/api/tax/weather",
+  path: "/api/weather",
   tags: ["Weather"],
   request: {
     params: getWeatherQuery,

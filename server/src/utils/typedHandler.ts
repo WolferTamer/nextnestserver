@@ -3,7 +3,11 @@ import { NextFunction, RequestHandler, Response } from "express";
 import { ZodObject } from "zod";
 
 export function typedHandler<T extends ZodObject>(
-  handler: (req: ValidatedRequest<T>, res: Response, next: NextFunction) => any,
+  handler: (
+    req: ValidatedRequest<T>,
+    res: Response,
+    next: NextFunction,
+  ) => unknown,
 ): RequestHandler {
   return (req, res, next) => handler(req as ValidatedRequest<T>, res, next);
 }

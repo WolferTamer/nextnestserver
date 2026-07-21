@@ -1,6 +1,6 @@
 import { Response, NextFunction, RequestHandler } from "express";
 import { ZodObject } from "zod";
-import { AuthenticatedValidatedRequest, AuthUser } from "../types/auth";
+import { AuthenticatedValidatedRequest } from "../types/auth";
 import jwt from "jsonwebtoken";
 import { UnauthorizedError } from "../errors";
 
@@ -10,7 +10,7 @@ export function authenticateAndValidate<T extends ZodObject>(
     req: AuthenticatedValidatedRequest<T>,
     res: Response,
     next: NextFunction,
-  ) => any,
+  ) => unknown,
 ): RequestHandler[] {
   const authHandler: RequestHandler = (req, res, next) => {
     const token = req.headers.authorization?.split(" ")[1];

@@ -26,7 +26,7 @@ function sleep(ms: number) {
 }
 
 export default async () => {
-  let incometaxes: incometaxCreateInput[] = [];
+  const incometaxes: incometaxCreateInput[] = [];
   fs.createReadStream("./income-tax.csv")
     .pipe(parse({ delimiter: ",", from_line: 2 }))
     .on("data", async function (row) {
@@ -34,23 +34,23 @@ export default async () => {
         return;
       }
       let state = row[0] as string;
-      let parenthesisIndex = state.indexOf(" ");
+      const parenthesisIndex = state.indexOf(" ");
       if (parenthesisIndex >= 0) {
         state = state.substring(0, parenthesisIndex).trim();
-        let standardsingle = parseFloat(row[7].replace(/[^0-9.]/g, ""));
-        let standardmarried = parseFloat(row[8].replace(/[^0-9.]/g, ""));
-        let localincome = row[12] === "true";
-        let cities = await cityRepository.findByState(state, { tax: true });
+        const standardsingle = parseFloat(row[7].replace(/[^0-9.]/g, ""));
+        const standardmarried = parseFloat(row[8].replace(/[^0-9.]/g, ""));
+        const localincome = row[12] === "true";
+        const cities = await cityRepository.findByState(state, { tax: true });
         if (isErr(cities)) {
           throw Error("Could not get cities.");
         }
         if (cities) {
-          for (let object of cities) {
+          for (const object of cities) {
             if (object.tax.length < 1) {
               continue;
             }
             const taxInfo = object.tax[0];
-            let taxobject: taxCreateInput = {
+            const taxobject: taxCreateInput = {
               city: { connect: { id: object.id } },
             };
             let shouldadd = false;
@@ -80,13 +80,13 @@ export default async () => {
           }
         }
       }
-      let singlerate = parseFloat(row[1].replace(/%/g, ""));
-      let singlebracket = parseFloat(
+      const singlerate = parseFloat(row[1].replace(/%/g, ""));
+      const singlebracket = parseFloat(
         row[3].replace(/\$/g, "").replace(/,/g, ""),
       );
 
-      let marriedrate = parseFloat(row[4].replace(/%/g, ""));
-      let marriedbracket = parseFloat(
+      const marriedrate = parseFloat(row[4].replace(/%/g, ""));
+      const marriedbracket = parseFloat(
         row[6].replace(/\$/g, "").replace(/,/g, ""),
       );
       if (singlerate > 0) {

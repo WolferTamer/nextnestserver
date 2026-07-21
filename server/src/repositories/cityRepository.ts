@@ -1,13 +1,7 @@
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import { prisma } from "../lib/prisma";
-import {
-  Err,
-  ERR,
-  isErrorWithMessage,
-  parsePrismaError,
-} from "../utils/errorGuards";
+import { Err, parsePrismaError } from "../utils/errorGuards";
 import { CityRepository } from "./repoTypes";
-import { City, User } from "../types";
 import {
   cityFindManyArgs,
   cityGetPayload,
@@ -24,6 +18,7 @@ export const cityRepository: CityRepository = {
         where: {
           id: id,
         },
+        include,
       });
       return city as cityGetPayload<{ include: T }> | null;
     } catch (e) {
@@ -101,7 +96,6 @@ export const cityRepository: CityRepository = {
     }
   },
   async upsertMany(data) {
-    const promises: Promise<City>[] = [];
     try {
       const res = await prisma.$transaction(
         data.map((row) =>

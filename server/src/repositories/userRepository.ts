@@ -82,7 +82,7 @@ export const userRepository: UserRepository = {
       });
       return updatedUser;
     } catch (e) {
-      let error = "";
+      let error;
       if (e instanceof PrismaClientKnownRequestError) {
         if (e.code === "P2001") {
           error = "That user doesn't exist";
