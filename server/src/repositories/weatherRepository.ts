@@ -1,10 +1,5 @@
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/wasm-compiler-edge";
 import { prisma } from "../lib/prisma";
-import {
-  ERR,
-  isErrorWithMessage,
-  parsePrismaError,
-} from "../utils/errorGuards";
+import { parsePrismaError } from "../utils/errorGuards";
 import { WeatherRepository } from "./repoTypes";
 
 export const weatherRepository: WeatherRepository = {

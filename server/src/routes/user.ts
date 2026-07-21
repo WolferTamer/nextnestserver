@@ -15,7 +15,6 @@ import {
 } from "../validators/userValidors";
 import { authenticateAndValidate } from "../middleware/authenticateAndValidate";
 import { requireRole } from "../middleware/requireRole";
-import { authHandler } from "../utils/authHandler";
 import { requireAuth } from "../middleware/requireAuth";
 
 const userRouter = Router();
@@ -24,7 +23,7 @@ userRouter.get(
   "/:id",
   requireRole("ADMIN"),
   ...validatedRoute(getUserByIdSchema, async (req, res) => {
-    let { id } = req.validated.params;
+    const { id } = req.validated.params;
     const user = await getUserService(id);
     res.json({
       user: user,
@@ -54,8 +53,8 @@ userRouter.get(
 userRouter.post(
   "/",
   ...validatedRoute(createUserSchema, async (req, res) => {
-    let user: userCreateInput = req.validated.body;
-    let newUser = await postUserService(user);
+    const user: userCreateInput = req.validated.body;
+    const newUser = await postUserService(user);
     res.status(201).json(newUser);
   }),
 );
@@ -63,7 +62,7 @@ userRouter.post(
 userRouter.put(
   "/",
   ...authenticateAndValidate(updateUserSchema, async (req, res) => {
-    let body: userUpdateInput = req.validated.body;
+    const body: userUpdateInput = req.validated.body;
     const user = await putUserService(req.user, body);
     res.json({ user: user });
   }),

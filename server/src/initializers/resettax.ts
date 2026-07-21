@@ -2,7 +2,6 @@ import { taxCreateInput } from "../generated/prisma/models";
 import { cityRepository } from "../repositories/cityRepository";
 import { taxRepository } from "../repositories/taxRepository";
 import { isErr } from "../utils/errorGuards";
-import getStateCode from "../utils/getStateCode";
 //Sleep function is used for delay between API calls. If there is no delay, API Ninja will return only errors for most API calls.
 function sleep(ms: number) {
   return new Promise((resolve) => {
@@ -53,11 +52,11 @@ export default async () => {
           avg75 /= result.length;
         }
         try {
-          let response = await fetch(
+          const response = await fetch(
             `https://api.api-ninjas.com/v1/salestax?city=${city.name}&state=${city.state}`,
             requestOptions,
           );
-          let result = await response.json();
+          const result = await response.json();
           let sales = 0;
           if (result.length > 0) {
             for (const value of result) {
@@ -80,7 +79,7 @@ export default async () => {
           if (count >= cities.length) {
             console.log("Finished loading tax information");
           }
-        } catch (e) {
+        } catch {
           console.log(`unable to get taxes for ${city.name}`);
         }
       })

@@ -47,7 +47,7 @@ export const sessionRepository: SessionRepository = {
   async replace(oldSession, newSession) {
     try {
       const sessions = await prisma.session.create({ data: newSession });
-      const revoked = await prisma.session.update({
+      await prisma.session.update({
         where: { id: oldSession },
         data: { revokedAt: new Date(), replacedBy: sessions.id },
       });
@@ -58,7 +58,7 @@ export const sessionRepository: SessionRepository = {
   },
   async revoke(session) {
     try {
-      const res = await prisma.session.update({
+      await prisma.session.update({
         where: { id: session.id },
         data: {
           revokedAt: new Date(),

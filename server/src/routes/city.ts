@@ -2,7 +2,7 @@
 //You can technically have different routes within each file, but this will be structured so
 //that each route has its own.
 
-import { Request, Response, Router } from "express";
+import { Router } from "express";
 import { getCityService, getManyCitiesService } from "../services/cityService";
 import { validatedRoute } from "../middleware/validate";
 import {

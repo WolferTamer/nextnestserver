@@ -1,5 +1,4 @@
 import questions from "../../questions.json";
-import jwt from "jsonwebtoken";
 import { Router } from "express";
 import { requireAuth } from "../middleware/requireAuth";
 

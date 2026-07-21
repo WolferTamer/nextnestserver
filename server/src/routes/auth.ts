@@ -7,7 +7,6 @@ import {
   refreshService,
 } from "../services/authService";
 import { requireAuth } from "../middleware/requireAuth";
-import { AuthenticatedRequest } from "../types/auth";
 import { validatedRoute } from "../middleware/validate";
 import { postAuthValidator } from "../validators/authValidator";
 import { UnauthorizedError } from "../errors";

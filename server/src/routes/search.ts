@@ -14,7 +14,7 @@ const searchRouter = Router();
 searchRouter.get(
   "/",
   ...validatedRoute(searchValidator, async (req, res) => {
-    let cities = await searchService(req.validated.query);
+    const cities = await searchService(req.validated.query);
 
     res.json(cities);
   }),

@@ -4,7 +4,11 @@ import { ZodType } from "zod";
 
 export function validatedRoute<T extends ZodType>(
   schema: T,
-  handler: (req: ValidatedRequest<T>, res: Response, next: NextFunction) => any,
+  handler: (
+    req: ValidatedRequest<T>,
+    res: Response,
+    next: NextFunction,
+  ) => unknown,
 ): RequestHandler[] {
   const runValidation: RequestHandler = (req, res, next) => {
     const result = schema.safeParse({

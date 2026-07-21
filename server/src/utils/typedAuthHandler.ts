@@ -7,7 +7,7 @@ export function typedAuthHandler<T extends ZodObject>(
     req: AuthenticatedValidatedRequest<T>,
     res: Response,
     next: NextFunction,
-  ) => any,
+  ) => unknown,
 ): RequestHandler {
   return (req, res, next) =>
     handler(req as AuthenticatedValidatedRequest<T>, res, next);

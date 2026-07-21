@@ -1,5 +1,5 @@
 import "dotenv/config";
-import express, { NextFunction, Request, Response } from "express";
+import express from "express";
 import cors from "cors";
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;

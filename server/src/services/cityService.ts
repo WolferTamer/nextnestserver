@@ -1,6 +1,6 @@
 import { NotFoundError } from "../errors";
 import { cityRepository } from "../repositories/cityRepository";
-import { City, CityDto } from "../types";
+import { CityDto } from "../types";
 import { isErr } from "../utils/errorGuards";
 
 export const getManyCitiesService = async (
