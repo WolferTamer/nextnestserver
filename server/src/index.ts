@@ -14,6 +14,8 @@ import taxRouter from "./routes/tax";
 import weatherRouter from "./routes/weather";
 import cookieParser from "cookie-parser";
 import searchRouter from "./routes/search";
+import swaggerUi from "swagger-ui-express";
+import { generateOpenApiDocument } from "./openapi/generateDocument";
 
 if (process.argv.length > 2) {
   initialize(process.argv);
@@ -33,6 +35,11 @@ app.use("/api/question", questionRouter);
 app.use("/api/tax", taxRouter);
 app.use("/api/weather", weatherRouter);
 app.use("/api/search", searchRouter);
+
+const openApiDocument = generateOpenApiDocument();
+
+app.get("/api/docs.json", (req, res) => res.json(openApiDocument));
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(openApiDocument));
 
 app.get("/api", (req, res) => {
   res.json({ message: "Hello from server Wow!" });

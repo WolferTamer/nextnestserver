@@ -1,16 +1,24 @@
-import z from "zod";
+import { z } from "../lib/zod.js";
+
+export const getIncomeTaxParams = z
+  .object({
+    state: z.string(),
+  })
+  .openapi("GetIncomeTaxParams");
+export const getIncomeTaxQuery = z
+  .object({
+    salary: z.coerce.number().int().positive().optional(),
+  })
+  .openapi("GetIncomeTaxQuery");
 
 export const getIncometaxValidator = z.object({
-  params: z.object({
-    state: z.string(),
-  }),
-  query: z.object({
-    salary: z.coerce.number().int().positive().optional(),
-  }),
+  params: getIncomeTaxParams,
+  query: getIncomeTaxQuery,
 });
 
+export const getMyIncometaxQuery = z.object({
+  state: z.string(),
+});
 export const getMyIncometaxValidator = z.object({
-  query: z.object({
-    state: z.string(),
-  }),
+  query: getMyIncometaxQuery,
 });
