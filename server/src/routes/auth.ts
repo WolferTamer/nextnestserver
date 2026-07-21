@@ -64,10 +64,8 @@ authRouter.get("/logout-all", async (req, res) => {
   const raw = req.cookies.refreshToken;
   if (!raw) throw UnauthorizedError;
   const [sessionId, token] = (raw as string).split(".");
-  const num = await logoutAllService(token, Number(sessionId));
-  res.json({
-    count: num,
-  });
+  await logoutAllService(token, Number(sessionId));
+  res.json();
 });
 
 export default authRouter;

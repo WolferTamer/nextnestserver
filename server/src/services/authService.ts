@@ -85,18 +85,18 @@ export const refreshService = async (
     session.revokedAt ||
     session.expiresAt < new Date()
   ) {
-    throw UnauthorizedError;
+    throw new UnauthorizedError();
   }
 
   if (session.refreshHash !== sha256(refreshToken)) {
     // token reuse / mismatch -> possible theft, kill the whole chain
     await sessionRepository.revokeFamily(session);
-    throw UnauthorizedError;
+    throw new UnauthorizedError();
   }
 
   const user = await userRepository.findById(session.userid);
   if (isErr(user) || !user) {
-    throw UnauthorizedError;
+    throw new UnauthorizedError();
   }
 
   const newToken = crypto.randomBytes(64).toString("hex");
@@ -107,7 +107,7 @@ export const refreshService = async (
     expiresAt: new Date(today.setDate(today.getDate() + 30)),
   });
   if (isErr(newsession)) {
-    throw UnauthorizedError;
+    throw new UnauthorizedError();
   }
   return {
     auth: {
@@ -138,18 +138,18 @@ export const logoutService = async (
     session.revokedAt ||
     session.expiresAt < new Date()
   ) {
-    throw UnauthorizedError;
+    throw new UnauthorizedError();
   }
 
   if (session.refreshHash !== sha256(refreshToken)) {
     // token reuse / mismatch -> possible theft, kill the whole chain
     await sessionRepository.revokeFamily(session);
-    throw UnauthorizedError;
+    throw new UnauthorizedError();
   }
 
   const revoked = await sessionRepository.revoke(session);
   if (isErr(revoked)) {
-    throw UnauthorizedError;
+    throw new UnauthorizedError();
   }
 };
 
@@ -164,18 +164,18 @@ export const logoutAllService = async (
     session.revokedAt ||
     session.expiresAt < new Date()
   ) {
-    throw UnauthorizedError;
+    throw new UnauthorizedError();
   }
 
   if (session.refreshHash !== sha256(refreshToken)) {
     // token reuse / mismatch -> possible theft, kill the whole chain
     await sessionRepository.revokeFamily(session);
-    throw UnauthorizedError;
+    throw new UnauthorizedError();
   }
 
   const revoked = await sessionRepository.revokeFamily(session);
   if (isErr(revoked)) {
-    throw UnauthorizedError;
+    throw new UnauthorizedError();
   }
 
   return revoked;
