@@ -1,8 +1,13 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { AppError } from "../errors";
 import { Prisma } from "../generated/prisma/client";
 import { treeifyError, ZodError } from "zod";
-export function errorHandler(err: Error, req: Request, res: Response) {
+export function errorHandler(
+  req: Request,
+  res: Response,
+  _next: NextFunction,
+  err: Error,
+) {
   // Known, operational errors — safe to expose the message
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
