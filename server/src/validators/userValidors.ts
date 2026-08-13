@@ -44,32 +44,26 @@ export const updateUserSchema = z.object({
   body: updateUserBody,
 });
 
+const User = z
+  .object({
+    userid: z.number().int().positive(),
+    email: z.email(),
+    role: z.enum(["USER", "ADMIN"]),
+    username: z.string(),
+    salary: z.number().int().positive().optional(),
+    createdAt: z.date(),
+    updatedAt: z.date(),
+  })
+  .openapi("User");
+
 export const userResponseSchema = z
   .object({
-    user: z.object({
-      userid: z.number().int().positive(),
-      email: z.email(),
-      role: z.enum(["USER", "ADMIN"]),
-      username: z.string(),
-      salary: z.number().int().positive().optional(),
-      createdAt: z.date(),
-      updatedAt: z.date(),
-    }),
+    user: User,
   })
   .openapi("UserResponse");
 
 export const manyUserResponseSchema = z
   .object({
-    users: z.array(
-      z.object({
-        userid: z.number().int().positive(),
-        email: z.email(),
-        role: z.enum(["USER", "ADMIN"]),
-        username: z.string(),
-        salary: z.number().int().positive().optional(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
-      }),
-    ),
+    users: z.array(User),
   })
   .openapi("ManyUsersResponse");

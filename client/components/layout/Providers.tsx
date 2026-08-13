@@ -1,6 +1,6 @@
 "use client";
 
-import { apiClient } from "@/app/api/client";
+import { apiClient } from "@/app/(primary)/api/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { ReactNode } from "react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";

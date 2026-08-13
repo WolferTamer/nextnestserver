@@ -20,40 +20,30 @@ export const getManyCitiesValidator = z.object({
   query: getManyCitiesQuery,
 });
 
+const City = z
+  .object({
+    id: z.number().positive().int(),
+    name: z.string(),
+    state: z.string(),
+    statecode: z.string().length(2),
+    density: z.number(),
+    growth: z.number(),
+    population: z.number().positive().int(),
+    lat: z.number(),
+    lon: z.number(),
+    createdAt: z.date(),
+    updatedAt: z.date(),
+  })
+  .openapi("City");
+
 export const manyCitiesResponse = z
   .object({
-    cities: z.array(
-      z.object({
-        id: z.number().positive().int(),
-        name: z.string(),
-        state: z.string(),
-        statecode: z.string().length(2),
-        density: z.number(),
-        growth: z.number(),
-        population: z.number().positive().int(),
-        lat: z.number(),
-        lon: z.number(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
-      }),
-    ),
+    cities: z.array(City),
   })
   .openapi("ManyCitiesResponse");
 
 export const cityResponse = z
   .object({
-    city: z.object({
-      id: z.number().positive().int(),
-      name: z.string(),
-      state: z.string(),
-      statecode: z.string().length(2),
-      density: z.number(),
-      growth: z.number(),
-      population: z.number().positive().int(),
-      lat: z.number(),
-      lon: z.number(),
-      createdAt: z.date(),
-      updatedAt: z.date(),
-    }),
+    city: City,
   })
   .openapi("CityResponse");

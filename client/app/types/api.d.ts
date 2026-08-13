@@ -515,20 +515,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            tax: {
-                                id: number;
-                                /** Format: date-time */
-                                createdAt: string;
-                                /** Format: date-time */
-                                updatedAt: string;
-                                salestax?: number;
-                                propertytaxquarter?: number;
-                                propertytaxthreequarters?: number;
-                                cityId: number;
-                                localtaxes?: boolean;
-                                singlestandarddeduction?: number;
-                                marriedstandarddeduction?: number;
-                            }[];
+                            tax: components["schemas"]["Tax"][];
                         };
                     };
                 };
@@ -568,20 +555,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            tax: {
-                                id: number;
-                                /** Format: date-time */
-                                createdAt: string;
-                                /** Format: date-time */
-                                updatedAt: string;
-                                salestax?: number;
-                                propertytaxquarter?: number;
-                                propertytaxthreequarters?: number;
-                                cityId: number;
-                                localtaxes?: boolean;
-                                singlestandarddeduction?: number;
-                                marriedstandarddeduction?: number;
-                            };
+                            tax: components["schemas"]["Tax"];
                         };
                     };
                 };
@@ -685,34 +659,23 @@ export interface components {
             };
         };
         UserResponse: {
-            user: {
-                userid: number;
-                /** Format: email */
-                email: string;
-                /** @enum {string} */
-                role: "USER" | "ADMIN";
-                username: string;
-                salary?: number;
-                /** Format: date-time */
-                createdAt: string;
-                /** Format: date-time */
-                updatedAt: string;
-            };
+            user: components["schemas"]["User"];
+        };
+        User: {
+            userid: number;
+            /** Format: email */
+            email: string;
+            /** @enum {string} */
+            role: "USER" | "ADMIN";
+            username: string;
+            salary?: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
         };
         ManyUsersResponse: {
-            users: {
-                userid: number;
-                /** Format: email */
-                email: string;
-                /** @enum {string} */
-                role: "USER" | "ADMIN";
-                username: string;
-                salary?: number;
-                /** Format: date-time */
-                createdAt: string;
-                /** Format: date-time */
-                updatedAt: string;
-            }[];
+            users: components["schemas"]["User"][];
         };
         CreateUserBody: {
             /** Format: email */
@@ -724,38 +687,39 @@ export interface components {
             salary: number;
         };
         ManyCitiesResponse: {
-            cities: {
-                id: number;
-                name: string;
-                state: string;
-                statecode: string;
-                density: number;
-                growth: number;
-                population: number;
-                lat: number;
-                lon: number;
-                /** Format: date-time */
-                createdAt: string;
-                /** Format: date-time */
-                updatedAt: string;
-            }[];
+            cities: components["schemas"]["City"][];
+        };
+        City: {
+            id: number;
+            name: string;
+            state: string;
+            statecode: string;
+            density: number;
+            growth: number;
+            population: number;
+            lat: number;
+            lon: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
         };
         CityResponse: {
-            city: {
-                id: number;
-                name: string;
-                state: string;
-                statecode: string;
-                density: number;
-                growth: number;
-                population: number;
-                lat: number;
-                lon: number;
-                /** Format: date-time */
-                createdAt: string;
-                /** Format: date-time */
-                updatedAt: string;
-            };
+            city: components["schemas"]["City"];
+        };
+        Tax: {
+            id: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            salestax?: number;
+            propertytaxquarter?: number;
+            propertytaxthreequarters?: number;
+            cityId: number;
+            localtaxes?: boolean;
+            singlestandarddeduction?: number;
+            marriedstandarddeduction?: number;
         };
     };
     responses: never;

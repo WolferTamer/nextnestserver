@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, DM_Sans, Lora } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import Providers from "@/components/layout/Providers";
-import SiteHeader from "@/components/layout/SiteHeader";
 
 const loraHeading = Lora({ subsets: ["latin"], variable: "--font-heading" });
 
@@ -43,12 +41,7 @@ export default function RootLayout({
       )}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
-        <Providers>
-          <SiteHeader />
-          {children}
-        </Providers>
-      </body>
+      {children}
     </html>
   );
 }

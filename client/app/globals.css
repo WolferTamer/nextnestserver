@@ -92,7 +92,7 @@
   --popover-foreground: oklch(0.987 0.002 197.1);
   --primary: #3d6b4f;
   --primary-foreground: oklch(0.979 0.021 166.113);
-  --secondary: oklch(0.274 0.006 286.033);
+  --secondary: #27272a;
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.275 0.011 216.9);
   --muted-foreground: oklch(0.723 0.014 214.4);
@@ -126,5 +126,33 @@
   }
   html {
     @apply font-sans;
+  }
+}
+
+.flex-header {
+  flex-grow: 0;
+  flex-shrink: 1;
+  flex-basis: auto;
+}
+
+.flex-body {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: auto;
+  min-height: 0;
+  min-width: 0;
+}
+.flex-footer {
+  flex-grow: 0;
+  flex-shrink: 1;
+}
+
+@media (width >= 48rem /* 768px */) {
+  .md\:flex-body {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: auto;
+    min-height: 0;
+    min-width: 0;
   }
 }

@@ -1,10 +1,10 @@
 "use client";
 
-import { useCities } from "./useCities";
-import { CityTable } from "./components/CityTable";
-import { columns } from "./components/columns";
+import { useCities } from "../useCities";
+import { CityTable } from "../components/CityTable";
+import { columns } from "../components/columns";
 
-const Cities = () => {
+const CitiesTablePage = () => {
   const { data: info, isLoading, error } = useCities();
   /*const [info, setData] = React.useState<City[]>([]);
   const [sorting,setSorting] = React.useState({ key: 'id', ascending: false })
@@ -46,4 +46,4 @@ const Cities = () => {
   );
 };
 
-export default Cities;
+export default CitiesTablePage;

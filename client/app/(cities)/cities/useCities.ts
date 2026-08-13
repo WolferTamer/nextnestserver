@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { components } from "../types/api";
-import { apiClient } from "../api/client";
+import { components } from "../../types/api";
+import { apiClient } from "../../(primary)/api/client";
 
 type City = components["schemas"]["ManyCitiesResponse"];
 
