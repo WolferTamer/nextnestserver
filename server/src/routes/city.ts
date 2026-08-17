@@ -15,9 +15,12 @@ const cityRouter = Router();
 cityRouter.get(
   "/",
   ...validatedRoute(getManyCitiesValidator, async (req, res) => {
-    const { name } = req.validated.query;
+    const { name, taxes, weather } = req.validated.query;
 
-    const cities = await getManyCitiesService(name);
+    const cities = await getManyCitiesService(name, {
+      taxes: taxes,
+      weather: weather,
+    });
     res.json({ cities: cities });
   }),
 );
@@ -26,8 +29,9 @@ cityRouter.get(
   "/:id",
   validatedRoute(getCityValidator, async (req, res) => {
     const { id } = req.validated.params;
+    const { taxes, weather } = req.validated.query;
 
-    const city = await getCityService(id);
+    const city = await getCityService(id, { taxes: taxes, weather: weather });
     res.json({ city: city });
   }),
 );

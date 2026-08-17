@@ -420,6 +420,8 @@ export interface paths {
             parameters: {
                 query?: {
                     name?: string;
+                    taxes?: boolean | null;
+                    weather?: boolean | null;
                 };
                 header?: never;
                 path?: never;
@@ -460,6 +462,8 @@ export interface paths {
                 header?: never;
                 path: {
                     id: number;
+                    taxes: boolean | null;
+                    weather: boolean | null;
                 };
                 cookie?: never;
             };
@@ -602,24 +606,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            weather: {
-                                id: number;
-                                /** Format: date-time */
-                                createdAt: string;
-                                /** Format: date-time */
-                                updatedAt: string;
-                                cityId: number;
-                                jantemp?: number;
-                                janhumidity?: number;
-                                janprecipitation?: number;
-                                janwind?: number;
-                                janclouds?: number;
-                                julytemp?: number;
-                                julyhumidity?: number;
-                                julyprecipitation?: number;
-                                julyclouds?: number;
-                                julywind?: number;
-                            }[];
+                            weather: components["schemas"]["Weather"][];
                         };
                     };
                 };
@@ -703,9 +690,26 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
+            weather?: components["schemas"]["Weather"][];
+            tax?: components["schemas"]["Tax"][];
         };
-        CityResponse: {
-            city: components["schemas"]["City"];
+        Weather: {
+            id: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            cityId: number;
+            jantemp?: number;
+            janhumidity?: number;
+            janprecipitation?: number;
+            janwind?: number;
+            janclouds?: number;
+            julytemp?: number;
+            julyhumidity?: number;
+            julyprecipitation?: number;
+            julyclouds?: number;
+            julywind?: number;
         };
         Tax: {
             id: number;
@@ -720,6 +724,9 @@ export interface components {
             localtaxes?: boolean;
             singlestandarddeduction?: number;
             marriedstandarddeduction?: number;
+        };
+        CityResponse: {
+            city: components["schemas"]["City"];
         };
     };
     responses: never;

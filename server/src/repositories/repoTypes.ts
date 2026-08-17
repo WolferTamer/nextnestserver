@@ -56,7 +56,10 @@ export interface CityRepository {
     id: number,
     include?: T,
   ): Promise<cityGetPayload<{ include: T }> | null | Err>;
-  findByLike(query: string): Promise<City[] | Err>;
+  findByLike<T extends cityInclude = {}>(
+    query: string,
+    include?: T,
+  ): Promise<cityGetPayload<{ include: T }>[] | Err>;
   search<T extends cityInclude = {}>(
     query: cityFindManyArgs,
     include?: T,

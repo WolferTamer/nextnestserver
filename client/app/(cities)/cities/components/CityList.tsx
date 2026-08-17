@@ -4,41 +4,35 @@ import CityListItem from "./CityListItem";
 import { X } from "lucide-react";
 import { components } from "@/app/types/api";
 import { useMap } from "@vis.gl/react-google-maps";
+import Pagination from "@/components/layout/Pagination";
+import { useState } from "react";
 
 interface CityListProps {
   className?: string;
   cities: components["schemas"]["City"][];
-  onClickClose: () => void;
-  onSelectCity: (id: number | undefined) => void;
 }
-function CityList({
-  className,
-  cities,
-  onClickClose,
-  onSelectCity,
-}: CityListProps) {
-  const map = useMap();
+function CityList({ className, cities }: CityListProps) {
+  const [page, setPage] = useState<number>(0);
+  const changePage = (ind: number) => {
+    setPage(ind);
+  };
   return (
-    <div className={`p-3 flex-col bg-background w-full md:w-auto ${className}`}>
-      <div className="flex-header">
-        <Button className="aspect-square" onClick={onClickClose}>
-          <X></X>
-        </Button>
-      </div>
-      <ul className="flex-body min-h-0 h-full overflow-x-hidden overflow-y-auto">
-        {cities.map((v, i) => (
-          <CityListItem
-            key={v.name + v.statecode}
-            city={v}
-            onClick={() => {
-              onSelectCity(i);
-
-              map.setCenter({ lat: v.lat, lng: v.lon });
-              map.setZoom(8);
-            }}
-          />
-        ))}
+    <div
+      className={`flex-body p-3 flex flex-col bg-background justify-around gap-5 w-full md:w-auto ${className}`}
+    >
+      <ul className="flex-body min-h-0 overflow-x-hidden overflow-y-auto">
+        {cities
+          .slice(page * 20, Math.min((page + 1) * 20, cities.length))
+          .map((v, i) => (
+            <CityListItem key={v.name + v.statecode} city={v} />
+          ))}
       </ul>
+      <Pagination
+        current={page}
+        max={cities.length / 20}
+        changePage={changePage}
+        className="flex-footer"
+      />
     </div>
   );
 }

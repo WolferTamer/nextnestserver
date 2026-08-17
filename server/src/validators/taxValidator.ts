@@ -10,7 +10,7 @@ export const getTaxValidator = z.object({
   query: getTaxQuery,
 });
 
-const Tax = z
+export const TaxObjValidator = z
   .object({
     id: z.number().int().positive(),
     createdAt: z.date(),
@@ -26,9 +26,9 @@ const Tax = z
   .openapi("Tax");
 
 export const taxResponse = z.object({
-  tax: Tax,
+  tax: TaxObjValidator,
 });
 
 export const taxesResponse = z.object({
-  tax: z.array(Tax),
+  tax: z.array(TaxObjValidator),
 });

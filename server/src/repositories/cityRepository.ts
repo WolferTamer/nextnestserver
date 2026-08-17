@@ -25,16 +25,20 @@ export const cityRepository: CityRepository = {
       return parsePrismaError(e);
     }
   },
-  async findByLike(query) {
+  async findByLike<T extends cityInclude = {}>(
+    query: string,
+    include?: T,
+  ): Promise<cityGetPayload<{ include: T }>[] | Err> {
     try {
       const cities = await prisma.city.findMany({
         where: {
           name: {
             contains: query,
           },
+          include,
         },
       });
-      return cities;
+      return cities as cityGetPayload<{ include: T }>[];
     } catch (e) {
       return parsePrismaError(e);
     }
