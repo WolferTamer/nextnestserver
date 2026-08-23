@@ -3,10 +3,11 @@ import { AppError } from "../errors";
 import { Prisma } from "../generated/prisma/client";
 import { treeifyError, ZodError } from "zod";
 export function errorHandler(
+  err: Error,
   req: Request,
   res: Response,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _next: NextFunction,
-  err: Error,
 ) {
   // Known, operational errors — safe to expose the message
   if (err instanceof AppError) {

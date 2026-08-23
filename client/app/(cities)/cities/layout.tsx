@@ -3,8 +3,9 @@
 import { APIProvider } from "@vis.gl/react-google-maps";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { LucideListCollapse, LucideX, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import CityMap from "./components/CityMap";
+import FilterHeader from "./components/FilterHeader";
 
 const CitiesLayout = ({
   children,
@@ -16,9 +17,7 @@ const CitiesLayout = ({
   return (
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
       <div className="w-full flex-body flex flex-col">
-        <div className="flex flex-row w-full flex-header bg-secondary">
-          Header
-        </div>
+        <FilterHeader />
 
         <div className="md:flex md:flex-row flex-body relative">
           <CityMap />

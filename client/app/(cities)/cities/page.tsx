@@ -5,12 +5,10 @@ import { useCities } from "./useCities";
 
 const Cities = () => {
   const { data: info, isLoading, error } = useCities();
-  return isLoading ? (
-    <div>Loading</div>
-  ) : error ? (
+  return error ? (
     <div>error</div>
   ) : (
-    <CityList cities={info!} />
+    <CityList cities={info!} isLoading={isLoading} />
   );
 };
 

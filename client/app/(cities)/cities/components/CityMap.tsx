@@ -1,41 +1,68 @@
-import { AdvancedMarker, Map, Pin } from "@vis.gl/react-google-maps";
+import { AdvancedMarker, Map, Pin, useMap } from "@vis.gl/react-google-maps";
 import { useCities } from "../useCities";
 import { useParams } from "next/navigation";
+import { useEffect } from "react";
+import { LoaderCircleIcon } from "@/components/ui/loader-circle";
 
 export default function CityMap() {
   const { data: info, isLoading, error } = useCities();
   const { citySlug } = useParams<{ citySlug?: string }>();
-  const slugNumber = parseInt(citySlug ?? "-1");
+  const map = useMap();
+  useEffect(() => {
+    if (info && citySlug && map) {
+      const city = info.find((c) => c.id == parseInt(citySlug ?? "-1"));
+      if (city) {
+        map.panTo({ lat: city.lat, lng: city.lon });
+        map.setZoom(8);
+      }
+    }
+  }, [citySlug, info, map]);
 
   return (
-    <Map
-      className="md:flex-body h-full md:h-auto absolute top-0 left-0 md:static w-full md:w-auto"
-      mapId="DEMO_MAP_ID"
-      defaultCenter={{
-        lat: 40,
-        lng: -103,
-      }}
-      defaultZoom={5}
-      gestureHandling="greedy"
-      disableDefaultUI
-    >
-      {info?.map((v, i) => (
-        <AdvancedMarker
-          key={v.name + v.statecode}
-          position={{ lat: v.lat, lng: v.lon }}
-          title={v.name}
+    <>
+      {isLoading || error ? (
+        <div
+          className={`md:flex-footer h-full md:h-auto absolute top-0 left-0 md:static w-full md:w-auto flex items-center justify-center bg-secondary`}
         >
-          {slugNumber !== -1 && i == slugNumber ? (
-            <Pin
-              background={"#3d6b4f"}
-              borderColor={"#27272a"}
-              glyphColor={"#27272a"}
-            ></Pin>
+          {error ? (
+            <p className="font-heading text-3xl font-bold">
+              There Was An Error
+            </p>
           ) : (
-            <Pin />
+            <LoaderCircleIcon className="size-32" />
           )}
-        </AdvancedMarker>
-      ))}
-    </Map>
+        </div>
+      ) : (
+        <Map
+          className={`md:flex-body h-full md:h-auto absolute top-0 left-0 md:static w-full md:w-auto`}
+          mapId="DEMO_MAP_ID"
+          defaultCenter={{
+            lat: 40,
+            lng: -103,
+          }}
+          defaultZoom={5}
+          gestureHandling="greedy"
+          disableDefaultUI
+        >
+          {info?.map((v) => (
+            <AdvancedMarker
+              key={v.name + v.statecode}
+              position={{ lat: v.lat, lng: v.lon }}
+              title={v.name}
+            >
+              {v.id == parseInt(citySlug ?? "-1") ? (
+                <Pin
+                  background={"#3d6b4f"}
+                  borderColor={"#27272a"}
+                  glyphColor={"#27272a"}
+                ></Pin>
+              ) : (
+                <Pin />
+              )}
+            </AdvancedMarker>
+          ))}
+        </Map>
+      )}
+    </>
   );
 }
