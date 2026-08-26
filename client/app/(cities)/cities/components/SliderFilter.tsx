@@ -14,6 +14,7 @@ interface SliderProps {
   low: number;
   step: number;
   unit?: string;
+  label: string;
   onValueChange: (min: number, max: number) => void;
 }
 
@@ -24,6 +25,7 @@ export function SliderFilter({
   low,
   unit,
   step,
+  label,
   onValueChange,
 }: SliderProps) {
   return (
@@ -36,7 +38,7 @@ export function SliderFilter({
             }
             className="w-30"
           >
-            Open
+            {label}
           </Button>
         }
       />

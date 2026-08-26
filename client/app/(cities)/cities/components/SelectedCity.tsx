@@ -1,8 +1,8 @@
 "use client";
 import { ChevronLeft } from "lucide-react";
 import { components } from "@/app/types/api";
-import Link from "next/link";
 import { LoaderCircleIcon } from "@/components/ui/loader-circle";
+import { useRouter } from "next/navigation";
 
 interface CityListProps {
   className?: string;
@@ -12,6 +12,7 @@ interface CityListProps {
 }
 function SelectedCity({ className, city, isLoading, error }: CityListProps) {
   const weather = !city || !city.weather ? undefined : city.weather[0];
+  const router = useRouter();
 
   return (
     <div
@@ -69,10 +70,10 @@ function SelectedCity({ className, city, isLoading, error }: CityListProps) {
         </div>
       )}
       <div className="flex-footer">
-        <Link href="/cities">
+        <button onClick={router.back} className="hover:cursor-pointer">
           <ChevronLeft />
           Back
-        </Link>
+        </button>
       </div>
     </div>
   );

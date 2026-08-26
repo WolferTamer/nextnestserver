@@ -31,7 +31,7 @@ const CitiesLayout = ({
             </div>
           )}
           <div
-            className={`md:flex-footer h-full md:h-auto absolute top-0 left-0 z-10 md:z-0 md:static flex flex-col ${open ? "" : "hidden"}`}
+            className={`md:flex-footer h-full md:h-auto w-full md:w-auto absolute top-0 left-0 z-10 md:z-0 md:static flex flex-col bg-background ${open ? "" : "hidden"}`}
           >
             <div className="flex-header self-end p-5">
               <Button className="size-12" onClick={() => setOpen(false)}>

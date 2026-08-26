@@ -1,12 +1,22 @@
 import { AdvancedMarker, Map, Pin, useMap } from "@vis.gl/react-google-maps";
 import { useCities } from "../useCities";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { LoaderCircleIcon } from "@/components/ui/loader-circle";
+import cityFilter from "@/app/utils/cityfilter";
 
 export default function CityMap() {
   const { data: info, isLoading, error } = useCities();
   const { citySlug } = useParams<{ citySlug?: string }>();
+  const searchParams = useSearchParams();
+  const salesLow = parseFloat(searchParams.get("salesLow") ?? "0");
+  const salesHigh = parseFloat(searchParams.get("salesHigh") ?? "20");
+  const usedCities = !info
+    ? undefined
+    : info.filter((v) => {
+        return cityFilter(v, salesHigh, salesLow);
+      });
+
   const map = useMap();
   useEffect(() => {
     if (info && citySlug && map) {
@@ -22,7 +32,7 @@ export default function CityMap() {
     <>
       {isLoading || error ? (
         <div
-          className={`md:flex-footer h-full md:h-auto absolute top-0 left-0 md:static w-full md:w-auto flex items-center justify-center bg-secondary`}
+          className={`md:flex-body h-full md:h-auto absolute top-0 left-0 md:static w-full md:w-auto flex items-center justify-center bg-secondary`}
         >
           {error ? (
             <p className="font-heading text-3xl font-bold">
@@ -44,7 +54,7 @@ export default function CityMap() {
           gestureHandling="greedy"
           disableDefaultUI
         >
-          {info?.map((v) => (
+          {usedCities?.map((v) => (
             <AdvancedMarker
               key={v.name + v.statecode}
               position={{ lat: v.lat, lng: v.lon }}

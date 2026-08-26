@@ -1,9 +1,9 @@
 "use client";
 import CityListItem from "./CityListItem";
 import { components } from "@/app/types/api";
-import Pagination from "@/components/layout/Pagination";
+import Paginator from "@/components/layout/Paginator";
 import { LoaderCircleIcon } from "@/components/ui/loader-circle";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 interface CityListProps {
   className?: string;
@@ -11,10 +11,8 @@ interface CityListProps {
   cities?: components["schemas"]["City"][];
 }
 function CityList({ className, cities, isLoading }: CityListProps) {
-  const [page, setPage] = useState<number>(0);
-  const changePage = (ind: number) => {
-    setPage(ind);
-  };
+  const searchParams = useSearchParams();
+  const page = parseInt(searchParams.get("page") ?? "0");
   return (
     <div
       className={`flex-body p-3 flex flex-col bg-background justify-around gap-5 w-full md:w-auto ${className}`}
@@ -32,11 +30,11 @@ function CityList({ className, cities, isLoading }: CityListProps) {
                 <CityListItem key={v.name + v.statecode} city={v} />
               ))}
           </ul>
-          <Pagination
+          <Paginator
             current={page}
-            max={cities.length / 20}
-            changePage={changePage}
+            max={Math.floor(cities.length / 20)}
             className="flex-footer"
+            path={`/cities?${searchParams.toString()}`}
           />
         </>
       )}

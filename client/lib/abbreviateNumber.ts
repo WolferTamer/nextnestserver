@@ -3,7 +3,7 @@ export function abbreviateNumber(val: number) {
   const s = ["", "k", "m", "b", "t"];
 
   // Dividing the value by 3.
-  const sNum = Math.floor(("" + val).length / 3);
+  const sNum = Math.floor((("" + val).length - 1) / 3);
 
   // Calculating the precised value.
   const sVal = parseFloat(
