@@ -12,9 +12,7 @@ import {
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/contact", label: "Contact" },
+  { href: "/cities", label: "Cities" },
 ];
 
 export default function Navbar() {

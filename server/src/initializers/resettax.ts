@@ -39,10 +39,12 @@ export default async () => {
       .then((response) => response.json())
       .then(async (result) => {
         //Some cities have multiple zip codes under the same name, this averages all of them
-        let avg25 = 0;
-        let avg75 = 0;
+        let avg25: number | undefined;
+        let avg75: number | undefined;
         console.log(result);
         if (result.length > 0) {
+          avg25 = 0;
+          avg75 = 0;
           for (const value of result) {
             avg25 += value.property_tax_25th_percentile;
             avg75 += value.property_tax_75th_percentile;
@@ -57,8 +59,9 @@ export default async () => {
             requestOptions,
           );
           const result = await response.json();
-          let sales = 0;
+          let sales: undefined | number;
           if (result.length > 0) {
+            sales = 0;
             for (const value of result) {
               sales += parseFloat(value.state_rate);
             }
